@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "ecommerce-backend"
+version = "0.1.0"
+description = ""
+authors = ["Leon Balloni <leon.balloni@makes.ai>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.8"
+fastapi = "^0.103.2"
+sqlalchemy = "^2.0.21"
+uvicorn = "^0.23.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
