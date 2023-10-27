@@ -3,6 +3,7 @@ from loguru import logger
 import sys
 from structure.connectors import Base
 from app.users import UserService
+from structure.models import UserModel
 from structure.schemas import UserSchema, UserInsert, UserUpdate
 from typing import Any, Union, List
 
@@ -13,10 +14,10 @@ logger.add(sys.stderr, colorize=True,
 
 class UserApi(CrudApi):
     def __init__(self,
-                 model: Base,
-                 schema: UserSchema,
-                 insert_schema: UserInsert,
-                 update_schema: UserUpdate,
+                 model: UserModel = UserModel,
+                 schema: UserSchema = UserSchema,
+                 insert_schema: UserInsert = UserInsert,
+                 update_schema: UserUpdate = UserUpdate,
                  *args, **kwargs):
         super().__init__(model, schema, insert_schema, update_schema,
                          *args, **kwargs)

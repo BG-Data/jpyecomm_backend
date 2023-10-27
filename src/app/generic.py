@@ -41,7 +41,7 @@ class CrudService(database_sessions):
                 filter_conditions.append(f"{k} BETWEEN :{param_key} AND {date.today()}")
             i += 1
         if i == 1:
-            return {"filter": filter_conditions,
+            return {"filter": ' '.join(filter_conditions),
                     "values": values}
         return {"filter": ' AND '.join(filter_conditions),
                 "values": values}
