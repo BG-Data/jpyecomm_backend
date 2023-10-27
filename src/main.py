@@ -8,11 +8,7 @@ app = FastAPI()
 
 Base.metadata.create_all(bind=engine)
 
-app.include_router(UserApi(
-                        model=UserModel,
-                        schema=UserSchema,
-                        update_schema=UserInsert,
-                        insert_schema=UserInsert),
+app.include_router(UserApi(),
                    tags=['Usuarios'],
                    prefix='/user')
 
