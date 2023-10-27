@@ -2,6 +2,7 @@ from pydantic import BaseModel, ConfigDict
 from datetime import date
 from typing import Optional
 
+
 class SchemaProduto(BaseModel):
     id: int
     nome: str
@@ -41,7 +42,9 @@ class UserInsert(UserBase):
     document_type: str
     user_type: str
 
+
 class UserUpdate(UserBase):
+    email: Optional[str] = None
     name: Optional[str] = None
     password: Optional[str] = None
     birth_date: Optional[date] = None
