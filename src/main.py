@@ -1,15 +1,20 @@
 from fastapi import FastAPI
-from api.products import ProdutoApi
+from api.users import UserApi
 import uvicorn
 from structure.connectors import Base, engine
-
+from structure.models import UserModel
+from structure.schemas import UserSchema, UserInsert
 app = FastAPI()
 
 Base.metadata.create_all(bind=engine)
 
-app.include_router(ProdutoApi().router,
-                   tags=['Produtos'],
-                   prefix='/produto')
+app.include_router(UserApi(
+                        model=UserModel,
+                        schema=UserSchema,
+                        update_schema=UserInsert,
+                        insert_schema=UserInsert),
+                   tags=['Usuarios'],
+                   prefix='/user')
 
 app_base_configs = {
     "host": "0.0.0.0",
