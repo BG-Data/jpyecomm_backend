@@ -55,6 +55,8 @@ class CrudService(database_sessions):
             if (limit := kwargs.pop('limit', None)):
                 # add pagination in the near future
                 item = item.limit(limit)
+            if (item_id := kwargs.pop('id', None)):
+                item = item.filter(self.model.id == item_id)
             if kwargs:
                 sql_filters = self.__filter_conditions(kwargs)
                 item = item.filter(text(sql_filters.get('filter'))).params(sql_filters.get('values'))
@@ -83,9 +85,12 @@ class CrudService(database_sessions):
             if not item:
                 logger.error('No item was found to be updated')
                 raise ValueError('Update item not found')
-            upd_result = item.update(update_schema.model_dump(exclude_unset=True))
-            logger.info(f"Rows updated: {upd_result}")
+            to_update = update_schema.model_dump(exclude_unset=True,
+                                                 exclude_none=True)
+            upd_result = item.update(to_update)
             self.update_session(session, item)
+            logger.info(f"Rows updated: {upd_result}")
+            logger.info(f'{update_schema.__repr_name__()} with id: {item.one().id} changed to {to_update}')
             upd_result = session.query(self.model).filter(self.model.id == item_id)
             return self.base_schema.model_validate(upd_result.one())
         except Exception as exp:
@@ -96,15 +101,19 @@ class CrudService(database_sessions):
                     item_id: int,
                     session: Session):
         try:
-            item = session.query(self.model).filter(self.model.id == item_id)
+            item = session.query(self.model).filter(self.model.id == item_id).one()
             if not item:
-                logger.error('No item was found to be updated')
-                raise ValueError('Update item not found')
-            del_result = item.delete()
-            logger.info(f'Rows deleted: {del_result}')
-
-            item = session.query(self.model).filter(self.model.id == item_id)
-            return 
+                logger.error('No item was found to be deleted')
+                raise ValueError('Delete item not found')
+            # del_result = item.delete()
+            self.delete_session(session, item)
+            logger.info('Row deleted')
+            logger.info(f'{item.__tablename__} tabled deleted row with id {item_id}')
+            return {'status': 'deleted',
+                    "table":
+                        {"name": item.__tablename__,
+                         'id': item.id}
+                    }
         except Exception as exp:
             logger.error(f'Error at >>>>> [Function name]: {exp}')
             raise exp
