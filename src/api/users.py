@@ -57,4 +57,4 @@ class UserApi(CrudApi):
         try:
             return self.crud.update_item(id, update_schema, session)
         except Exception as exp:
-            logger.error(f'error at insert user {exp}')
+            logger.error(f'error at update user {exp}')
