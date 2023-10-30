@@ -25,8 +25,8 @@ def init_app():
                     'prefix': '/addresses'},
                 'payment':
                     {'router': PaymentApi(),
-                    'tags': ['Pagamentos'],
-                    'prefix': '/payments'}
+                    'tags': ['Métodos de Pagamento'],
+                    'prefix': '/payment_methods'}
                 }
     app = init_routes(app, api_routes)
     return app

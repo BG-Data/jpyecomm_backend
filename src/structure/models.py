@@ -82,14 +82,14 @@ class PaymentMethodModel(DefaultModel):
     usuario = relationship('UserModel', back_populates='pagamentos')
 
 
-class ProductToSaleModel(DefaultModel):
-    __tablename__ = 'produto_para_venda'
-    id = Column(Integer, primary_key=True)
-    product_id = Column(Integer, ForeignKey('produtos.id'), nullable=False)
-    venda_id = Column(Integer, ForeignKey('vendas.id'), nullable=False)
+# class ProductToSaleModel(DefaultModel):
+#     __tablename__ = 'produto_para_venda'
+#     id = Column(Integer, primary_key=True)
+#     product_id = Column(Integer, ForeignKey('produtos.id'), nullable=False)
+#     venda_id = Column(Integer, ForeignKey('vendas.id'), nullable=False)
 
-    produto = relationship('ProductModel', back_populates='produto_para')
-    venda = relationship('SaleModel', back_populates='venda_para')
+#     produto = relationship('ProductModel', back_populates='produto_para')
+#     venda = relationship('SaleModel', back_populates='venda_para')
 
 
 class ProductModel(DefaultModel):
@@ -111,9 +111,10 @@ class ProductModel(DefaultModel):
     tipo_personalizado = Column(String(255))
     registrador_id = Column(Integer, ForeignKey('usuarios.id'),
                             nullable=False)  # quem criou
-    
+
     usuario = relationship('UserModel', back_populates='produtos')
-    produto_para = relationship('ProductToSaleModel', back_populates='produto')
+    venda_produto = relationship('SaleModel', back_populates='produto_vendido')
+
 
 class SaleModel(DefaultModel):
     __tablename__ = 'vendas'
@@ -130,6 +131,8 @@ class SaleModel(DefaultModel):
     estado_pedido = Column(String(100), nullable=False)
     obs_pedido = Column(String(255))
     motivo_devolucao = Column(String(255))
+    produto_id = Column(Integer, ForeignKey('produtos.id'),
+                        nullable=False)
     metodo_pagamento_id = Column(Integer, ForeignKey('tipo_pagamentos.id'),
                                  nullable=False)
     comprador_id = Column(Integer, ForeignKey('usuarios.id'),
@@ -138,6 +141,7 @@ class SaleModel(DefaultModel):
                                  nullable=False)
     endereco_cobranca_id = Column(Integer, ForeignKey('enderecos.id'),
                                   nullable=False)
-    
+
     usuario = relationship('UserModel', back_populates='vendas')
-    venda_para = relationship('ProductToSaleModel', back_populates='venda')
+    produto_vendido = relationship('ProductModel',
+                                   back_populates='venda_produto')

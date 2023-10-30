@@ -112,12 +112,141 @@ class ProductApi(CrudApi):
             logger.error(f'error at update {self.__class__.__name__} {exp}')
 
 class PaymentApi(CrudApi):
-    pass
+    def __init__(self,
+                 model: PaymentMethodModel = PaymentMethodModel,
+                 schema: PaymentSchema = PaymentSchema,
+                 insert_schema: PaymentInsert = PaymentInsert,
+                 update_schema: PaymentUpdate = PaymentUpdate,
+                 *args, **kwargs):
+        super().__init__(model, schema, insert_schema, update_schema,
+                         *args, **kwargs)
+        self.add_api_route('/',
+                           self.get,
+                           methods=['GET'],
+                           response_model=Union[List[schema],
+                                                schema, Any])
+        self.add_api_route('/',
+                           self.insert,
+                           methods=['POST'],
+                           response_model=Union[schema, Any])
+        self.add_api_route('/',
+                           self.update,
+                           methods=['PUT'],
+                           response_model=Union[schema, Any])
+        self.add_api_route('/',
+                           self.delete,
+                           methods=['DELETE'],
+                           response_model=Union[schema, Any, Dict[str, str]])
+
+        self.user_service = PaymentService(model, schema)
+
+    def insert(self,
+               insert_schema: ProductInsert,
+               session: Session = Depends(get_session)):
+        try:
+            return self.crud.insert_item(insert_schema, session)
+        except Exception as exp:
+            logger.error(f'error at insert {self.__class__.__name__} {exp}')
+    
+    def update(self,
+               id: int,
+               update_schema: ProductUpdate,
+               session: Session = Depends(get_session)):
+        try:
+            return self.crud.update_item(id, update_schema, session)
+        except Exception as exp:
+            logger.error(f'error at update {self.__class__.__name__} {exp}')
 
 class SaleApi(CrudApi):
-    pass
+    def __init__(self,
+                 model: SaleModel = SaleModel,
+                 schema: SaleSchema = SaleSchema,
+                 insert_schema: SaleInsert = SaleInsert,
+                 update_schema: SaleUpdate = SaleUpdate,
+                 *args, **kwargs):
+        super().__init__(model, schema, insert_schema, update_schema,
+                         *args, **kwargs)
+        self.add_api_route('/',
+                           self.get,
+                           methods=['GET'],
+                           response_model=Union[List[schema],
+                                                schema, Any])
+        self.add_api_route('/',
+                           self.insert,
+                           methods=['POST'],
+                           response_model=Union[schema, Any])
+        self.add_api_route('/',
+                           self.update,
+                           methods=['PUT'],
+                           response_model=Union[schema, Any])
+        self.add_api_route('/',
+                           self.delete,
+                           methods=['DELETE'],
+                           response_model=Union[schema, Any, Dict[str, str]])
+
+        self.user_service = SaleService(model, schema)
+
+    def insert(self,
+               insert_schema: ProductInsert,
+               session: Session = Depends(get_session)):
+        try:
+            return self.crud.insert_item(insert_schema, session)
+        except Exception as exp:
+            logger.error(f'error at insert {self.__class__.__name__} {exp}')
+    
+    def update(self,
+               id: int,
+               update_schema: ProductUpdate,
+               session: Session = Depends(get_session)):
+        try:
+            return self.crud.update_item(id, update_schema, session)
+        except Exception as exp:
+            logger.error(f'error at update {self.__class__.__name__} {exp}')
 
 class AddressApi(CrudApi):
-    pass
+    def __init__(self,
+                 model: AddressModel = AddressModel,
+                 schema: AddressSchema = AddressSchema,
+                 insert_schema: AddressInsert = AddressInsert,
+                 update_schema: AddressUpdate = AddressUpdate,
+                 *args, **kwargs):
+        super().__init__(model, schema, insert_schema, update_schema,
+                         *args, **kwargs)
+        self.add_api_route('/',
+                           self.get,
+                           methods=['GET'],
+                           response_model=Union[List[schema],
+                                                schema, Any])
+        self.add_api_route('/',
+                           self.insert,
+                           methods=['POST'],
+                           response_model=Union[schema, Any])
+        self.add_api_route('/',
+                           self.update,
+                           methods=['PUT'],
+                           response_model=Union[schema, Any])
+        self.add_api_route('/',
+                           self.delete,
+                           methods=['DELETE'],
+                           response_model=Union[schema, Any, Dict[str, str]])
+
+        self.user_service = AddressService(model, schema)
+
+    def insert(self,
+               insert_schema: ProductInsert,
+               session: Session = Depends(get_session)):
+        try:
+            return self.crud.insert_item(insert_schema, session)
+        except Exception as exp:
+            logger.error(f'error at insert {self.__class__.__name__} {exp}')
+    
+    def update(self,
+               id: int,
+               update_schema: ProductUpdate,
+               session: Session = Depends(get_session)):
+        try:
+            return self.crud.update_item(id, update_schema, session)
+        except Exception as exp:
+            logger.error(f'error at update {self.__class__.__name__} {exp}')
 
 
