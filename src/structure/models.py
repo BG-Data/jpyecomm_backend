@@ -1,5 +1,6 @@
 from structure.connectors import Base
 from sqlalchemy import String, Sequence, Date, DateTime, Integer, Numeric, Column, Boolean, Float, ForeignKey, DateTime, func
+from sqlalchemy.orm import relationship
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -45,6 +46,11 @@ class UserModel(DefaultModel):
     deletado = Column(Boolean, nullable=False,
                       default=False)  # Usuário está desativado? (padrão é False) rmeoção lógica e não física
 
+    enderecos = relationship('AddressModel', back_populates='usuario')
+    pagamentos = relationship('PaymentMethodModel', back_populates='usuario')
+    produtos = relationship('ProductModel', back_populates='usuario')
+    vendas = relationship('SalesModel', back_populates='usuario')
+
 
 class AddressModel(DefaultModel):
     __tablename__ = 'enderecos'
@@ -63,6 +69,8 @@ class AddressModel(DefaultModel):
     usuario_id = Column(Integer, ForeignKey('usuarios.id'), nullable=False,
                         onupdate='CASCADE')
 
+    usuario = relationship('UserModel', back_populates='enderecos')
+
 
 class PaymentMethodModel(DefaultModel):
     __tablename__ = 'tipo_pagamentos'
@@ -71,12 +79,17 @@ class PaymentMethodModel(DefaultModel):
     tipo_pagamento = Column(String(100), nullable=False)
     usuario_id = Column(Integer, ForeignKey('usuarios.id'), nullable=False)
 
+    usuario = relationship('UserModel', back_populates='pagamentos')
+
 
 class ProductToSaleModel(DefaultModel):
     __tablename__ = 'produto_para_venda'
     id = Column(Integer, primary_key=True)
     product_id = Column(Integer, ForeignKey('produtos.id'), nullable=False)
     venda_id = Column(Integer, ForeignKey('vendas.id'), nullable=False)
+
+    produto = relationship('ProductModel', back_populates='produto_para')
+    venda = relationship('SaleModel', back_populates='venda_para')
 
 
 class ProductModel(DefaultModel):
@@ -98,7 +111,9 @@ class ProductModel(DefaultModel):
     tipo_personalizado = Column(String(255))
     registrador_id = Column(Integer, ForeignKey('usuarios.id'),
                             nullable=False)  # quem criou
-
+    
+    usuario = relationship('UserModel', back_populates='produtos')
+    produto_para = relationship('ProductToSaleModel', back_populates='produto')
 
 class SaleModel(DefaultModel):
     __tablename__ = 'vendas'
@@ -123,3 +138,6 @@ class SaleModel(DefaultModel):
                                  nullable=False)
     endereco_cobranca_id = Column(Integer, ForeignKey('enderecos.id'),
                                   nullable=False)
+    
+    usuario = relationship('UserModel', back_populates='vendas')
+    venda_para = relationship('ProductToSaleModel', back_populates='venda')
