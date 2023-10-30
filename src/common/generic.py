@@ -3,7 +3,7 @@ from structure.connectors import Base, get_session
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from typing import Any, Union, List
-from common.general_classes import database_sessions
+from common import database_sessions
 from loguru import logger
 import sys
 from fastapi import APIRouter, HTTPException, Depends, Request
