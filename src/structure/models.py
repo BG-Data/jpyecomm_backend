@@ -49,7 +49,7 @@ class UserModel(DefaultModel):
     enderecos = relationship('AddressModel', back_populates='usuario')
     pagamentos = relationship('PaymentMethodModel', back_populates='usuario')
     produtos = relationship('ProductModel', back_populates='usuario')
-    vendas = relationship('SalesModel', back_populates='usuario')
+    vendas = relationship('SaleModel', back_populates='usuario')
 
 
 class AddressModel(DefaultModel):
