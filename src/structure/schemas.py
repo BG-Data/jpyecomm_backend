@@ -1,11 +1,8 @@
 from pydantic import BaseModel, ConfigDict
 from datetime import date
 from typing import Optional
-
-
-class SchemaProduto(BaseModel):
-    id: int
-    nome: str
+from decimal import Decimal
+# Usuários
 
 
 class UserBase(BaseModel):
@@ -15,41 +12,73 @@ class UserBase(BaseModel):
 
 class UserSchema(UserBase):
     id: int
-    name: str
-    password: str
-    birth_date: date
+    nome: str
+    senha: str
+    dt_nasc: date
     lgpd: bool
-    document: str
-    document_type: str
-    user_type: str
-
-
-class UserGet(UserBase):
-    name: str
-    birth_date: date
-    lgpd: bool
-    document: str
-    document_type: str
-    user_type: str
+    documento: str
+    tipo_documento: str
+    tipo_usuario: str
+    deletado: bool
 
 
 class UserInsert(UserBase):
-    name: str
-    password: str
-    birth_date: date
+    nome: str
+    senha: str
+    dt_nasc: date
     lgpd: bool
-    document: str
-    document_type: str
-    user_type: str
+    documento: str
+    tipo_documento: str
+    tipo_usuario: str
+    deletado: bool = False
 
 
 class UserUpdate(UserBase):
     email: Optional[str] = None
-    name: Optional[str] = None
-    password: Optional[str] = None
-    birth_date: Optional[date] = None
+    nome: Optional[str] = None
+    senha: Optional[str] = None
+    dt_nasc: Optional[date] = None
     lgpd: Optional[bool] = None
-    document: Optional[str] = None
-    document_type: Optional[str] = None
-    user_type: Optional[str] = None
+    documento: Optional[str] = None
+    tipo_documento: Optional[str] = None
+    tipo_usuario: Optional[str] = None
+    deletado: Optional[bool] = None
+# Produtos
 
+
+class ProductBase(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    nome: str
+    tipo_produto: str
+    quantidade: int
+    valor_unitario: Decimal
+    tempo_fabrica: Decimal
+    observacao: str
+
+
+class ProductSchema(ProductBase):
+    id: int
+    infos: str
+    categoria: bool
+    detalhes: str
+    url_imagens: str
+    nome_personalizado: str
+    tipo_personalizado: str
+
+
+class ProductInsert(ProductBase):
+    infos: str
+    categoria: bool
+    detalhes: str
+    url_imagens: str
+    nome_personalizado: str
+    tipo_personalizado: str
+
+
+class ProductUpdate(ProductBase):
+    infos: Optional[str] = None
+    categoria: Optional[bool] = None
+    detalhes: Optional[str] = None
+    url_imagens: Optional[str] = None
+    nome_personalizado: Optional[str] = None
+    tipo_personalizado: Optional[str] = None

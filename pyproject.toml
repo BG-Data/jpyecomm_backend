@@ -11,6 +11,11 @@ fastapi = "^0.103.2"
 sqlalchemy = "^2.0.21"
 uvicorn = "^0.23.2"
 loguru = "^0.7.2"
+python-dotenv = "^1.0.0"
+python-decouple = "^3.8"
+cryptocode = "^0.1"
+alembic = "^1.12.1"
+psycopg2-binary = "^2.9.9"
 
 
 [build-system]

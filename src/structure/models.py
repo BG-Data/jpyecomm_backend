@@ -1,5 +1,6 @@
 from structure.connectors import Base
-from sqlalchemy import String, Sequence, Date, DateTime, Integer, Numeric, Column, Boolean, Float, ForeignKey, DateTime, func
+from sqlalchemy import String, Sequence, Date, DateTime, Integer, \
+      Numeric, Column, Boolean, Float, ForeignKey, DateTime, func
 from sqlalchemy.orm import relationship
 from pydantic import BaseModel
 from datetime import datetime
@@ -8,7 +9,7 @@ from datetime import datetime
 class DefaultModel(Base):
     __abstract__ = True
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
-    updated_at = Column(DateTime, default=datetime.utcnow, 
+    updated_at = Column(DateTime, default=datetime.utcnow,
                         onupdate=datetime.utcnow, index=True)
 
     def formatted_date_created(self):
@@ -82,16 +83,6 @@ class PaymentMethodModel(DefaultModel):
     usuario = relationship('UserModel', back_populates='pagamentos')
 
 
-# class ProductToSaleModel(DefaultModel):
-#     __tablename__ = 'produto_para_venda'
-#     id = Column(Integer, primary_key=True)
-#     product_id = Column(Integer, ForeignKey('produtos.id'), nullable=False)
-#     venda_id = Column(Integer, ForeignKey('vendas.id'), nullable=False)
-
-#     produto = relationship('ProductModel', back_populates='produto_para')
-#     venda = relationship('SaleModel', back_populates='venda_para')
-
-
 class ProductModel(DefaultModel):
     __tablename__ = 'produtos'
     id = Column(Integer, primary_key=True)
@@ -105,10 +96,9 @@ class ProductModel(DefaultModel):
     categoria = Column(Boolean, nullable=False)
     detalhes = Column(String(255))
     url_imagens = Column(String(255))
-    personalizacao = Column(String(255))
-    nome_impressao = Column(String(255))
-    msg_presente = Column(String(255))
-    tipo_personalizado = Column(String(255))
+    nome_personalizado = Column(String(255))
+    tipo_personalizado = Column(String(255), nullable=True)
+
     registrador_id = Column(Integer, ForeignKey('usuarios.id'),
                             nullable=False)  # quem criou
 
@@ -129,8 +119,10 @@ class SaleModel(DefaultModel):
     plataforma_pag = Column(String(50), nullable=False)
     periodo_envio = Column(String(20), nullable=False)
     estado_pedido = Column(String(100), nullable=False)
-    obs_pedido = Column(String(255))
-    motivo_devolucao = Column(String(255))
+    obs_pedido = Column(String(255), nullable=True)
+    motivo_devolucao = Column(String(255), nullable=True)
+    nome_impressao = Column(String(255), nullable=True)
+    msg_presente = Column(String(255), nullable=True)
     produto_id = Column(Integer, ForeignKey('produtos.id'),
                         nullable=False)
     metodo_pagamento_id = Column(Integer, ForeignKey('tipo_pagamentos.id'),

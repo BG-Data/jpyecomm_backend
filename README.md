@@ -23,3 +23,7 @@ Repositório do PI2 para criar um ecomm
 
 * Pela [IDE](https://code.visualstudio.com/docs/python/environments)
 * Terminal -> source .venv/bin/activate
+
+> 6. Migrações de banco de dados: 
+
+* Usamos Alembic, um pacote python focado em migrar. [Alembic](https://alembic.sqlalchemy.org/en/latest/tutorial.html)
