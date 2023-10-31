@@ -1,9 +1,6 @@
 from fastapi import FastAPI
-from api import UserApi, ProductApi#, SaleApi, AddressApi, PaymentApi
+from api import UserApi, ProductApi, SaleApi, AddressApi, PaymentApi
 from structure.connectors import Base, engine
-
-
-
 
 def init_app():
     app = FastAPI()
@@ -14,19 +11,19 @@ def init_app():
                 'product':
                     {'router': ProductApi(),
                     'tags': ['Produtos'],
-                    'prefix': '/products'}
-                # 'sale':
-                #     {'router': SaleApi(),
-                #     'tags': ['Vendas'],
-                #     'prefix': '/sales'},
-                # 'address':
-                #     {'router': AddressApi(),
-                #     'tags': ['Endereços'],
-                #     'prefix': '/addresses'},
-                # 'payment':
-                #     {'router': PaymentApi(),
-                #     'tags': ['Métodos de Pagamento'],
-                #     'prefix': '/payment_methods'}
+                    'prefix': '/products'},
+                'sale':
+                    {'router': SaleApi(),
+                    'tags': ['Vendas'],
+                    'prefix': '/sales'},
+                'address':
+                    {'router': AddressApi(),
+                    'tags': ['Endereços'],
+                    'prefix': '/addresses'},
+                'payment':
+                    {'router': PaymentApi(),
+                    'tags': ['Métodos de Pagamento'],
+                    'prefix': '/payment_methods'}
                 }
     app = init_routes(app, api_routes)
     Base.metadata.create_all(bind=engine)

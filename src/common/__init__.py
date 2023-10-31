@@ -34,14 +34,14 @@ class DatabaseSessions:
             raise e
         
 
-class ServicePassword:
+class PasswordService:
     criptocode = Config.CRIPTOCODE
 
-    def set_password(self):
-        pass
+    # def set_password(self):
+    #     pass
 
     @classmethod
-    def verify_password(cls, plain_password: str, hashed_password: str) -> bool:
+    def get_password(cls, plain_password: str, hashed_password: str) -> bool:
         '''
         Checks if the password is compatible with the password hash.
 
@@ -58,7 +58,7 @@ class ServicePassword:
         return cryptocode.decrypt(hashed_password, cls.criptocode) == plain_password
 
     @classmethod
-    def get_password_hash(cls, plain_password: str) -> str:
+    def hash_password(cls, plain_password: str) -> str:
         '''
         get the password hash.
 

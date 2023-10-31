@@ -42,7 +42,7 @@ class UserModel(DefaultModel):
     dt_nasc = Column(Date, nullable=False, index=True)
     lgpd = Column(Boolean, nullable=False)
     documento = Column(String(18), nullable=False, index=True)
-    tipo_doc = Column(String(10), nullable=False)
+    tipo_documento = Column(String(10), nullable=False)
     tipo_usuario = Column(String, nullable=False, default='comprador')
     deletado = Column(Boolean, nullable=False,
                       default=False)  # Usuário está desativado? (padrão é False) rmeoção lógica e não física

@@ -3,8 +3,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 from settings import Config
 
-# SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
-# SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
 # remove connect_args if using any other db than sqlite
 engine = create_engine(
     Config.SQLALCHEMY_DATABASE_URI, 
@@ -18,10 +16,6 @@ def get_session():
     session: Session = SessionLocal()
     try:
         yield session
-        # session.commit()
-    # except Exception as exc:
-    #     session.rollback()
-    #     raise exc
     finally:
         session.close()
 

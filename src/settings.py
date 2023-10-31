@@ -14,9 +14,7 @@ class Config:
     PSQL_IP = config("PSQL_IP", default='localhost', cast=str)
     PSQL_DB = config("PSQL_DB", default='ecomm_of_love', cast=str)
     # postgresql+psycopg2://PSQL_USER:PSQL_PASSWORD@PSQL_IP/PSQL_DB
-    SQLALCHEMY_DATABASE_URI = config('DATABASE_URL', default='', cast=str).replace(
-                                     'postgres://', 'postgresql://') or \
-                                     'sqlite:///' + os.path.join(basedir, 'sqlite.db')
+    SQLALCHEMY_DATABASE_URI = config('DATABASE_URL', default='', cast=str) or 'sqlite:///' + os.path.join(basedir, 'sqlite.db')                                     
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     CRIPTOCODE = config("CRIPTOCODE", cast=str)
     APPLICATION_NAME = 'Ecomm of love'
