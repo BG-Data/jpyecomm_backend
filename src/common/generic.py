@@ -1,12 +1,12 @@
 from pydantic import BaseModel
 from structure.connectors import Base, get_session
 from sqlalchemy.orm import Session
-from sqlalchemy import text
+from sqlalchemy import text, or_
 from typing import Any, Union, List
 from common import DatabaseSessions
 from loguru import logger
 import sys
-from fastapi import APIRouter, HTTPException, Depends, Request
+from fastapi import APIRouter, HTTPException, Depends, Request, status
 from datetime import date
 
 logger.add(sys.stderr, colorize=True,
@@ -81,10 +81,16 @@ class CrudService(DatabaseSessions):
                     update_schema: BaseModel,
                     session: Session):
         try:
-            item = session.query(self.model).filter(self.model.id == item_id)
+            if hasattr(self.model, 'email'):
+                item = session.query(self.model).filter(or_(self.model.id == item_id,
+                                                            self.model.email == update_schema.email))
+            else:
+                item = session.query(self.model).filter(self.model.id == item_id)
             if not item:
                 logger.error('No item was found to be updated')
-                raise ValueError('Update item not found')
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                    detail={'status': status.HTTP_400_BAD_REQUEST,
+                                            'info': f'No user found with this id: {id}'})
             to_update = update_schema.model_dump(exclude_unset=True,
                                                  exclude_none=True)
             upd_result = item.update(to_update)

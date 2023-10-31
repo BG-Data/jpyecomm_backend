@@ -1,12 +1,18 @@
 from pydantic import BaseModel, ConfigDict
-from datetime import date
+from datetime import date, datetime
 from typing import Optional
 from decimal import Decimal
 # Usuários
 
 
-class UserBase(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+class PydanticModel(BaseModel):
+    model_config = ConfigDict(from_attributes=True,
+                              extra='allow')
+    # created_at: Optional[datetime] = datetime.utcnow()
+    # updated_at: Optional[datetime] = datetime.utcnow()
+
+
+class UserBase(PydanticModel):
     email: str
 
 
@@ -33,21 +39,11 @@ class UserInsert(UserBase):
     deletado: bool = False
 
 
-class UserUpdate(UserBase):
-    email: Optional[str] = None
-    nome: Optional[str] = None
-    senha: Optional[str] = None
-    dt_nasc: Optional[date] = None
-    lgpd: Optional[bool] = None
-    documento: Optional[str] = None
-    tipo_documento: Optional[str] = None
-    tipo_usuario: Optional[str] = None
-    deletado: Optional[bool] = None
-# Produtos
+class UserUpdate(UserInsert):
+    velha_senha: str
 
 
-class ProductBase(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+class ProductBase(PydanticModel):
     nome: str
     tipo_produto: str
     quantidade: int
@@ -75,10 +71,113 @@ class ProductInsert(ProductBase):
     tipo_personalizado: str
 
 
-class ProductUpdate(ProductBase):
-    infos: Optional[str] = None
-    categoria: Optional[bool] = None
-    detalhes: Optional[str] = None
-    url_imagens: Optional[str] = None
-    nome_personalizado: Optional[str] = None
-    tipo_personalizado: Optional[str] = None
+class ProductUpdate(ProductInsert):
+    pass
+
+
+# Address
+
+
+class AddressBase(PydanticModel):
+    cep: str
+    logradouro: str
+    numero: str
+    bairro: str
+    estado: str
+    pais: str
+
+
+class AddressSchema(AddressBase):
+    id: int
+    complemento: str
+    ponto_ref: str
+    tipo_endereco: str
+    entrega: bool
+    cobranca: bool
+    usuario_id: int
+
+
+class AddressInsert(AddressBase):
+    complemento: str
+    ponto_ref: str
+    tipo_endereco: str
+    entrega: bool
+    cobranca: bool
+    usuario_id: int
+
+
+class AddressUpdate(AddressInsert):
+    pass
+
+
+#Payments
+
+
+class PaymentBase(PydanticModel):
+    nome: str
+
+
+class PaymentSchema(PaymentBase):
+    id: int
+    tipo_pagamento: str
+    usuario_id: int
+
+
+class PaymentInsert(PaymentBase):
+    tipo_pagamento: str
+    usuario_id: int
+
+
+class PaymentUpdate(PaymentInsert):
+    pass
+
+
+# Sales
+
+
+class SaleBase(PydanticModel):
+    valor_total: Decimal
+    valor_unitario: Decimal
+    quantidade: int
+    frete: Decimal
+
+
+class SaleSchema(SaleBase):
+    id: int
+    tipo_moeda: str
+    tempo_envio: int
+    tipo_entrega: str
+    plataforma_pag: str
+    periodo_envio: str  # corrente, util, etc
+    estado_pedido: str
+    obs_pedido: Optional[str] = None
+    motivo_devolucao: Optional[str] = None
+    nome_impressao: Optional[str] = None
+    msg_presente: Optional[str] = None
+    produto_id: int
+    metodo_pagamento_id: int
+    comprador_id: int
+    endereco_entrega_id: int
+    endereco_cobranca_id: int
+
+
+class SaleInsert(SaleBase):
+    tipo_moeda: str
+    tempo_envio: int
+    tipo_entrega: str
+    plataforma_pag: str
+    periodo_envio: str  # corrente, util, etc
+    estado_pedido: str
+    obs_pedido: Optional[str] = None
+    motivo_devolucao: Optional[str] = None
+    nome_impressao: Optional[str] = None
+    msg_presente: Optional[str] = None
+    produto_id: int
+    metodo_pagamento_id: int
+    comprador_id: int
+    endereco_entrega_id: int
+    endereco_cobranca_id: int
+
+
+class SaleUpdate(SaleInsert):
+    pass
