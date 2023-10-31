@@ -14,7 +14,7 @@ from structure.schemas import UserSchema, UserInsert, UserUpdate, \
 from typing import Any, Union, List, Dict
 from fastapi import HTTPException, status
 from fastapi.responses import JSONResponse
-from structure import make_partial_model
+from structure import MakeOptionalPydantic
 
 
 logger.add(sys.stderr, colorize=True,
@@ -27,7 +27,7 @@ class UserApi(CrudApi):
                  model: UserModel = UserModel,
                  schema: UserSchema = UserSchema,
                  insert_schema: UserInsert = UserInsert,
-                 update_schema: UserUpdate = make_partial_model(UserUpdate),
+                 update_schema: UserUpdate = MakeOptionalPydantic.make_partial_model(UserUpdate),
                  *args, **kwargs):
         super().__init__(model, schema, insert_schema, update_schema,
                          *args, **kwargs)
@@ -63,7 +63,7 @@ class UserApi(CrudApi):
 
     def update(self,
                id: int,
-               update_schema: make_partial_model(UserUpdate),
+               update_schema: MakeOptionalPydantic.make_partial_model(UserUpdate),
                session: Session = Depends(get_session)):
         
         if update_schema.model_dump(exclude_unset=True).get('velha_senha'):
@@ -86,7 +86,7 @@ class ProductApi(CrudApi):
                  model: ProductModel = ProductModel,
                  schema: ProductSchema = ProductSchema,
                  insert_schema: ProductInsert = ProductInsert,
-                 update_schema: ProductUpdate = make_partial_model(ProductUpdate),
+                 update_schema: ProductUpdate = MakeOptionalPydantic.make_partial_model(ProductUpdate),
                  *args, **kwargs):
         super().__init__(model, schema, insert_schema, update_schema,
                          *args, **kwargs)
@@ -120,7 +120,7 @@ class ProductApi(CrudApi):
     
     def update(self,
                id: int,
-               update_schema: make_partial_model(ProductUpdate),
+               update_schema: MakeOptionalPydantic.make_partial_model(ProductUpdate),
                session: Session = Depends(get_session)):
         try:
             return self.crud.update_item(id, update_schema, session)
@@ -133,7 +133,7 @@ class PaymentApi(CrudApi):
                  model: PaymentMethodModel = PaymentMethodModel,
                  schema: PaymentSchema = PaymentSchema,
                  insert_schema: PaymentInsert = PaymentInsert,
-                 update_schema: PaymentUpdate = make_partial_model(PaymentUpdate),
+                 update_schema: PaymentUpdate = MakeOptionalPydantic.make_partial_model(PaymentUpdate),
                  *args, **kwargs):
         super().__init__(model, schema, insert_schema, update_schema,
                          *args, **kwargs)
@@ -167,7 +167,7 @@ class PaymentApi(CrudApi):
     
     def update(self,
                id: int,
-               update_schema: make_partial_model(PaymentUpdate),
+               update_schema: MakeOptionalPydantic.make_partial_model(PaymentUpdate),
                session: Session = Depends(get_session)):
         try:
             return self.crud.update_item(id, update_schema, session)
@@ -180,7 +180,7 @@ class SaleApi(CrudApi):
                  model: SaleModel = SaleModel,
                  schema: SaleSchema = SaleSchema,
                  insert_schema: SaleInsert = SaleInsert,
-                 update_schema: SaleUpdate = make_partial_model(SaleUpdate),
+                 update_schema: SaleUpdate = MakeOptionalPydantic.make_partial_model(SaleUpdate),
                  *args, **kwargs):
         super().__init__(model, schema, insert_schema, update_schema,
                          *args, **kwargs)
@@ -214,7 +214,7 @@ class SaleApi(CrudApi):
     
     def update(self,
                id: int,
-               update_schema: make_partial_model(SaleUpdate),
+               update_schema: MakeOptionalPydantic.make_partial_model(SaleUpdate),
                session: Session = Depends(get_session)):
         try:
             return self.crud.update_item(id, update_schema, session)
@@ -227,7 +227,7 @@ class AddressApi(CrudApi):
                  model: AddressModel = AddressModel,
                  schema: AddressSchema = AddressSchema,
                  insert_schema: AddressInsert = AddressInsert,
-                 update_schema: AddressUpdate = make_partial_model(AddressUpdate),
+                 update_schema: AddressUpdate = MakeOptionalPydantic.make_partial_model(AddressUpdate),
                  *args, **kwargs):
         super().__init__(model, schema, insert_schema, update_schema,
                          *args, **kwargs)
@@ -261,7 +261,7 @@ class AddressApi(CrudApi):
     
     def update(self,
                id: int,
-               update_schema: make_partial_model(AddressUpdate),
+               update_schema: MakeOptionalPydantic.make_partial_model(AddressUpdate),
                session: Session = Depends(get_session)):
         try:
             return self.crud.update_item(id, update_schema, session)

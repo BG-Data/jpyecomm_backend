@@ -40,6 +40,5 @@ class AuthApi:
         return responses.JSONResponse({
             "datetime": datetime.utcnow().strftime("%Y/%m/%d %H:%M:%S"),
             "status": "ok",
-            "environment": CONFIG.ENVIRONMENT,
             'user': user_context['user']
         }, 200)
