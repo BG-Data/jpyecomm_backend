@@ -6,8 +6,7 @@ from decimal import Decimal
 
 
 class PydanticModel(BaseModel):
-    model_config = ConfigDict(from_attributes=True,
-                              extra='allow')
+    model_config = ConfigDict(from_attributes=True)
     # created_at: Optional[datetime] = datetime.utcnow()
     # updated_at: Optional[datetime] = datetime.utcnow()
 
