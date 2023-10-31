@@ -1,7 +1,9 @@
 from sqlalchemy.orm import Session
+import cryptocode
+from settings import Config
 
 
-class database_sessions:
+class DatabaseSessions:
 
     def create_session(self, db: Session, db_action):
         try:
@@ -30,3 +32,43 @@ class database_sessions:
         except Exception as e:
             db.rollback()
             raise e
+        
+
+class ServicePassword:
+    criptocode = Config.CRIPTOCODE
+
+    def set_password(self):
+        pass
+
+    @classmethod
+    def verify_password(cls, plain_password: str, hashed_password: str) -> bool:
+        '''
+        Checks if the password is compatible with the password hash.
+
+            Args:
+                plain_password (string): fetch the user insert forms password to be evaluated
+                hashed_password (string): hashed password fetched by the DB engine.
+
+            Returns:
+                boolean type -> True for correct or False for incorrect plain_password inserted          
+
+            Raises:
+                TypeError: If any of the args is not str or the return is not boolean.
+        '''
+        return cryptocode.decrypt(hashed_password, cls.criptocode) == plain_password
+
+    @classmethod
+    def get_password_hash(cls, plain_password: str) -> str:
+        '''
+        get the password hash.
+
+            Args:
+                plain_password (string): create a hashed password
+
+            Returns:
+                string type -> plain password added
+
+            Raises:
+                TypeError: If any of the args is not string or the return is not string.
+        '''
+        return cryptocode.encrypt(plain_password, cls.criptocode)

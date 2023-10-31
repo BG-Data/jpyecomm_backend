@@ -3,7 +3,7 @@ from structure.connectors import Base, get_session
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from typing import Any, Union, List
-from common import database_sessions
+from common import DatabaseSessions
 from loguru import logger
 import sys
 from fastapi import APIRouter, HTTPException, Depends, Request
@@ -14,7 +14,7 @@ logger.add(sys.stderr, colorize=True,
            filter="CrudService", level="INFO")
 
 
-class CrudService(database_sessions):
+class CrudService(DatabaseSessions):
     def __init__(self,
                  model: Base,
                  schema: BaseModel):
