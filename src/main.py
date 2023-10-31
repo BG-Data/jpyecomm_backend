@@ -1,5 +1,5 @@
 import uvicorn
-from init import init_app
+from routes import init_app
 from settings import Config
 
 app = init_app()
