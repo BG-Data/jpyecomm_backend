@@ -38,17 +38,17 @@ class UserModel(DefaultModel):
                 primary_key=True, index=True)
     nome = Column(String, index=True, nullable=False)
     senha = Column(String, nullable=False)
-    email = Column(String, nullable=False, index=True)
+    email = Column(String, nullable=False, index=True, unique=True)
     dt_nasc = Column(Date, nullable=False, index=True)
     lgpd = Column(Boolean, nullable=False)
-    documento = Column(String(18), nullable=False, index=True)
+    documento = Column(String(18), nullable=False, index=True, unique=True)
     tipo_documento = Column(String(10), nullable=False)
-    tipo_usuario = Column(String, nullable=False, default='comprador')
+    tipo_usuario = Column(String, nullable=False, default='comprador')  # comprador, administrador(apenas devs) e vendedor
     deletado = Column(Boolean, nullable=False,
                       default=False)  # Usuário está desativado? (padrão é False) rmeoção lógica e não física
 
     enderecos = relationship('AddressModel', back_populates='usuario')
-    pagamentos = relationship('PaymentMethodModel', back_populates='usuario')
+    pagamentos = relationship('UserToPayment', back_populates='usuario')
     produtos = relationship('ProductModel', back_populates='usuario')
     vendas = relationship('SaleModel', back_populates='usuario')
 
@@ -73,14 +73,23 @@ class AddressModel(DefaultModel):
     usuario = relationship('UserModel', back_populates='enderecos')
 
 
+class UserToPayment(DefaultModel):
+    __tablename__ = 'usuario_para_pagamento'
+    id = Column(Integer, primary_key=True)
+    usuario_id = Column(Integer, ForeignKey('usuarios.id'), nullable=False)
+    pagamento_id = Column(Integer, ForeignKey('tipo_pagamentos.id'), nullable=False)
+
+    usuario = relationship('UserModel', back_populates='pagamentos')
+    pagamento = relationship('PaymentMethodModel', back_populates='pagamento_metodo')
+
+
 class PaymentMethodModel(DefaultModel):
     __tablename__ = 'tipo_pagamentos'
     id = Column(Integer, primary_key=True)
     nome = Column(String(50), nullable=False)
     tipo_pagamento = Column(String(100), nullable=False)
-    usuario_id = Column(Integer, ForeignKey('usuarios.id'), nullable=False)
 
-    usuario = relationship('UserModel', back_populates='pagamentos')
+    pagamento_metodo = relationship('UserToPayment', back_populates='pagamento')
 
 
 class ProductModel(DefaultModel):
