@@ -1,22 +1,77 @@
 from datetime import datetime
 from typing import Annotated, Union
-
-from fastapi import APIRouter, Depends, Response, responses
+from structure.models import UserModel
+from structure.connectors import get_session, Session
+from sqlalchemy import or_
+from fastapi import APIRouter, Depends, Response, responses, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordBearer
 from loguru import logger
+from common import PasswordService, DatabaseSessions
+from settings import Config
 import sys
+from jose import JWTError, jwt
 
 logger.add(sys.stderr, colorize=True,
            format="<yellow>{time}</yellow> {level} <green>{message}</green>",
            filter="Auth", level="INFO")
 
 
-class AuthService:
-    pass
+class AuthService(DatabaseSessions, PasswordService):
+    oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth")
+
+    def generate_user_jwt(self, username: str, password: str, session: Session):
+        # Confere se email/username está cadastrado
+        user_query = session.query(UserModel).filter(or_(UserModel.email == username,
+                                                         UserModel.nome == username)).one_or_none()
+        if not user_query:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect username",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        # Confere se a senha passada está correta
+        if not self.get_password(password, user_query.senha):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        # Adiciona contexto para os dados do usuário (dados que podem ser úteis para front)
+        user_context = {
+            "id": user_query.id,
+            'name': user_query.nome,
+            'dt_created': str(user_query.created_at),
+            "username": user_query.email,
+            "type": user_query.tipo_usuario
+        }
+        expire = datetime.utcnow() + Config.JWT_ACCESS_TOKEN_EXPIRES
+        # Gerar token codificado
+        encoded_jwt = jwt.encode(
+            claims={'sub': username, 'exp': expire, 'context': user_context},
+            key=Config.SECRET_KEY,
+            algorithm=Config.ALGORITHM
+        )
+        # retorno do jwt
+        return {'access_token': encoded_jwt,
+                'token_type': "bearer",
+                'user_context': user_context}
+
+    @staticmethod
+    def get_auth_user_context(token: Annotated[str, Depends(oauth2_scheme)]):
+        # Retorna o contexto do usuário
+        try:
+            payload = jwt.decode(token, Config.SECRET_KEY, algorithms=[Config.ALGORITHM])
+            return payload.get('context')
+        except JWTError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=f"Could not validate credentials {exc}",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
 
 class AuthApi:
-
     def __init__(self):
         self.router = APIRouter()
         self.auth_service = AuthService()
@@ -24,21 +79,34 @@ class AuthApi:
         self.router.add_api_route(path='/auth',
                                   endpoint=self.login_for_access_token,
                                   methods=['POST'])
-
         self.router.add_api_route(path='/health',
                                   endpoint=self.auth_health,
                                   methods=['GET'])
 
-    async def login_for_access_token(self, auth_credentials: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Response:
-        jwt = await self.auth_service.generate_user_jwt(
-            user=auth_credentials.username,
-            password=auth_credentials.password
+    def login_for_access_token(self, auth_credentials: Annotated[OAuth2PasswordRequestForm, Depends()],
+                               session: Session = Depends(get_session)) -> Response:
+        jwt = self.auth_service.generate_user_jwt(
+            username=auth_credentials.username,
+            password=auth_credentials.password,
+            session=session
         )
         return responses.JSONResponse(jwt, 200)
+    
+    # @staticmethod
+    # def get_user_context(token: Annotated[str, Depends(oauth2_scheme)]):
+    #     try:
+    #         payload = jwt.decode(token, Config.SECRET_KEY, algorithms=[Config.ALGORITHM])
+    #         return payload.get('context')
+    #     except JWTError as exc:
+    #         raise HTTPException(
+    #             status_code=status.HTTP_401_UNAUTHORIZED,
+    #             detail=f"Could not validate credentials {exc}",
+    #             headers={"WWW-Authenticate": "Bearer"},
+    #         )
 
-    async def auth_health(self, user_context: Annotated[dict, Depends(AuthService.get_auth_user_context)]):
+    def auth_health(self, user_context: Annotated[dict, Depends(AuthService.get_auth_user_context)]):
         return responses.JSONResponse({
             "datetime": datetime.utcnow().strftime("%Y/%m/%d %H:%M:%S"),
             "status": "ok",
-            'user': user_context['user']
+            'user': user_context['name']
         }, 200)

@@ -1,6 +1,6 @@
 import os
 from decouple import config
-
+from datetime import timedelta
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 # load_dotenv(os.path.join(basedir, '.env'))
@@ -19,3 +19,6 @@ class Config:
     CRIPTOCODE = config("CRIPTOCODE", cast=str)
     APPLICATION_NAME = 'Ecomm of love'
     RELOAD = config('RELOAD', default=True, cast=str)
+    JWT_ACCESS_TOKEN_EXPIRES = config('JWT_ACCESS_TOKEN_EXPIRES', default=timedelta(hours=1))
+    SECRET_KEY = config('SECRET_KEY', cast=str)
+    ALGORITHM = config('ALGORITHM', cast=str)
