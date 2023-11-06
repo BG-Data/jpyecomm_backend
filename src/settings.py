@@ -13,7 +13,7 @@ class Config:
     PSQL_PASSWORD = config("PSQL_PASSWORD", default='thisissecret', cast=str)
     PSQL_IP = config("PSQL_IP", default='localhost', cast=str)
     PSQL_DB = config("PSQL_DB", default='ecomm_of_love', cast=str)
-    SQLALCHEMY_DATABASE_URI = config('DATABASE_URL', default='', cast=str) or 'sqlite:///' + os.path.join(basedir, 'sqlite.db')                                     
+    SQLALCHEMY_DATABASE_URI = config('DATABASE_URL', default='', cast=str) or 'sqlite:///' + os.path.join(basedir, 'test.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     CRIPTOCODE = config("CRIPTOCODE", cast=str, default='teste')
     APPLICATION_NAME = 'Ecomm of love'
