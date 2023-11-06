@@ -20,6 +20,16 @@ logger.add(sys.stderr, colorize=True,
 class AuthService(DatabaseSessions, PasswordService):
     oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth")
 
+    def __context(self, user_model: UserModel) -> dict:
+        user_context = {
+            "id": user_model.id,
+            'name': user_model.nome,
+            'dt_created': str(user_model.created_at),
+            "username": user_model.email,
+            "type": user_model.tipo_usuario
+        }
+        return user_context
+
     def generate_user_jwt(self, username: str, password: str, session: Session):
         # Confere se email/username está cadastrado
         user_query = session.query(UserModel).filter(or_(UserModel.email == username,
@@ -38,13 +48,7 @@ class AuthService(DatabaseSessions, PasswordService):
                 headers={"WWW-Authenticate": "Bearer"},
             )
         # Adiciona contexto para os dados do usuário (dados que podem ser úteis para front)
-        user_context = {
-            "id": user_query.id,
-            'name': user_query.nome,
-            'dt_created': str(user_query.created_at),
-            "username": user_query.email,
-            "type": user_query.tipo_usuario
-        }
+        user_context = self.__context(user_query)
         expire = datetime.utcnow() + Config.JWT_ACCESS_TOKEN_EXPIRES
         # Gerar token codificado
         encoded_jwt = jwt.encode(
