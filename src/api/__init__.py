@@ -48,7 +48,6 @@ class UserApi(CrudApi):
                            self.delete,
                            methods=['DELETE'],
                            response_model=Union[schema, Any, Dict[str, str]])
-
         self.user_service = UserService(model, schema)
         self.password_service = PasswordService()
 

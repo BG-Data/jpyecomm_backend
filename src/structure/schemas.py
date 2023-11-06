@@ -2,6 +2,7 @@ from pydantic import BaseModel, ConfigDict
 from datetime import date, datetime
 from typing import Optional
 from decimal import Decimal
+from settings import Config
 # Usuários
 
 
@@ -9,6 +10,12 @@ class PydanticModel(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     # created_at: Optional[datetime] = datetime.utcnow()
     # updated_at: Optional[datetime] = datetime.utcnow()
+
+
+class Health(PydanticModel):
+    datetime: str = datetime.utcnow().strftime("%Y/%m/%d %H:%M:%S")
+    status: str = 'ok'
+    environment: str = Config.SCHEMA
 
 
 class UserBase(PydanticModel):
