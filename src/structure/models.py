@@ -1,13 +1,14 @@
 from structure.connectors import Base
-from sqlalchemy import String, Sequence, Date, DateTime, Integer, \
+from sqlalchemy import String, Date, DateTime, Integer, \
       Numeric, Column, Boolean, Float, ForeignKey, DateTime, func
 from sqlalchemy.orm import relationship
-from pydantic import BaseModel
 from datetime import datetime
+from settings import Config
 
 
 class DefaultModel(Base):
     __abstract__ = True
+    __table_args__ = {'schema': Config.SCHEMA}
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
     updated_at = Column(DateTime, default=datetime.utcnow,
                         onupdate=datetime.utcnow, index=True)
@@ -53,36 +54,6 @@ class UserModel(DefaultModel):
     vendas = relationship('SaleModel', back_populates='usuario')
 
 
-class AddressModel(DefaultModel):
-    __tablename__ = 'enderecos'
-    id = Column(Integer, primary_key=True)
-    cep = Column(String(20), nullable=False)
-    complemento = Column(String(100))
-    logradouro = Column(String(100), nullable=False)
-    bairro = Column(String(50), nullable=False)
-    numero = Column(String(20), nullable=False)
-    estado = Column(String(5), nullable=False)
-    pais = Column(String(50), nullable=False)
-    ponto_ref = Column(String(250))
-    tipo_endereco = Column(String(50), nullable=False)
-    entrega = Column(Boolean, nullable=False)
-    cobranca = Column(Boolean, nullable=False)
-    usuario_id = Column(Integer, ForeignKey('usuarios.id'), nullable=False,
-                        onupdate='CASCADE')
-
-    usuario = relationship('UserModel', back_populates='enderecos')
-
-
-class UserToPayment(DefaultModel):
-    __tablename__ = 'usuario_para_pagamento'
-    id = Column(Integer, primary_key=True)
-    usuario_id = Column(Integer, ForeignKey('usuarios.id'), nullable=False)
-    pagamento_id = Column(Integer, ForeignKey('tipo_pagamentos.id'), nullable=False)
-
-    usuario = relationship('UserModel', back_populates='pagamentos')
-    pagamento = relationship('PaymentMethodModel', back_populates='pagamento_metodo')
-
-
 class PaymentMethodModel(DefaultModel):
     __tablename__ = 'tipo_pagamentos'
     id = Column(Integer, primary_key=True)
@@ -90,6 +61,16 @@ class PaymentMethodModel(DefaultModel):
     tipo_pagamento = Column(String(100), nullable=False)
 
     pagamento_metodo = relationship('UserToPayment', back_populates='pagamento')
+
+
+class UserToPayment(DefaultModel):
+    __tablename__ = 'usuario_para_pagamento'
+    id = Column(Integer, primary_key=True)
+    usuario_id = Column(Integer, ForeignKey(f'{Config.SCHEMA}.usuarios.id'), nullable=False)
+    pagamento_id = Column(Integer, ForeignKey(f'{Config.SCHEMA}.tipo_pagamentos.id'), nullable=False)
+
+    usuario = relationship('UserModel', back_populates='pagamentos')
+    pagamento = relationship('PaymentMethodModel', back_populates='pagamento_metodo')
 
 
 class ProductModel(DefaultModel):
@@ -108,11 +89,31 @@ class ProductModel(DefaultModel):
     nome_personalizado = Column(String(255))
     tipo_personalizado = Column(String(255), nullable=True)
 
-    registrador_id = Column(Integer, ForeignKey('usuarios.id'),
+    registrador_id = Column(Integer, ForeignKey(f'{Config.SCHEMA}.usuarios.id'),
                             nullable=False)  # quem criou
 
     usuario = relationship('UserModel', back_populates='produtos')
     venda_produto = relationship('SaleModel', back_populates='produto_vendido')
+
+
+class AddressModel(DefaultModel):
+    __tablename__ = 'enderecos'
+    id = Column(Integer, primary_key=True)
+    cep = Column(String(20), nullable=False)
+    complemento = Column(String(100))
+    logradouro = Column(String(100), nullable=False)
+    bairro = Column(String(50), nullable=False)
+    numero = Column(String(20), nullable=False)
+    estado = Column(String(5), nullable=False)
+    pais = Column(String(50), nullable=False)
+    ponto_ref = Column(String(250))
+    tipo_endereco = Column(String(50), nullable=False)
+    entrega = Column(Boolean, nullable=False)
+    cobranca = Column(Boolean, nullable=False)
+    usuario_id = Column(Integer, ForeignKey(f'{Config.SCHEMA}.usuarios.id'), nullable=False,
+                        onupdate='CASCADE')
+
+    usuario = relationship('UserModel', back_populates='enderecos')
 
 
 class SaleModel(DefaultModel):
@@ -132,15 +133,15 @@ class SaleModel(DefaultModel):
     motivo_devolucao = Column(String(255), nullable=True)
     nome_impressao = Column(String(255), nullable=True)
     msg_presente = Column(String(255), nullable=True)
-    produto_id = Column(Integer, ForeignKey('produtos.id'),
+    produto_id = Column(Integer, ForeignKey(f'{Config.SCHEMA}.produtos.id'),
                         nullable=False)
-    metodo_pagamento_id = Column(Integer, ForeignKey('tipo_pagamentos.id'),
+    metodo_pagamento_id = Column(Integer, ForeignKey(f'{Config.SCHEMA}.tipo_pagamentos.id'),
                                  nullable=False)
-    comprador_id = Column(Integer, ForeignKey('usuarios.id'),
+    comprador_id = Column(Integer, ForeignKey(f'{Config.SCHEMA}.usuarios.id'),
                           nullable=False)  # quem comprou
-    endereco_entrega_id = Column(Integer, ForeignKey('enderecos.id'),
+    endereco_entrega_id = Column(Integer, ForeignKey(f'{Config.SCHEMA}.enderecos.id'),
                                  nullable=False)
-    endereco_cobranca_id = Column(Integer, ForeignKey('enderecos.id'),
+    endereco_cobranca_id = Column(Integer, ForeignKey(f'{Config.SCHEMA}.enderecos.id'),
                                   nullable=False)
 
     usuario = relationship('UserModel', back_populates='vendas')
