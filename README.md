@@ -14,15 +14,15 @@ Exemplificação das operações Back-Front-Infra
 
 <!-- Make the tree with tre -d -I __pycache__ >> tree.txt -->
 
-Faça a sua árvore:
+## A árvore:
 
-Ubuntu 
+* **Ubuntu** 
 ```shell
 sudo apt-get install tree 
 ```
-
+* **Execute** no terminal
  ```shell
- tree -d -I __pycache__ >> tree.txt
+tree -d -I __pycache__ >> tree.txt
  ```
 ```shell
 .
