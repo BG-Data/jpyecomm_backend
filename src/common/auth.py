@@ -20,18 +20,10 @@ logger.add(sys.stderr, colorize=True,
 class AuthService(DatabaseSessions, PasswordService):
     oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth")
 
-    def __context(self, user_model: UserModel) -> dict:
-        user_context = {
-            "id": user_model.id,
-            'name': user_model.name,
-            'dt_created': str(user_model.created_at),
-            "username": user_model.email,
-            "type": user_model.user_type
-        }
-        return user_context
-
-    def generate_user_jwt(self, username: str, password: str, session: Session):
-        # Confere se email/username está cadastrado
+    def __db_check_user(self,
+                        username: str, password: str,
+                        session: Session) -> UserModel:
+        '''Checks if user exists'''
         user_query = session.query(UserModel).filter(or_(UserModel.email == username,
                                                          UserModel.name == username)).one_or_none()
         if not user_query:
@@ -47,8 +39,24 @@ class AuthService(DatabaseSessions, PasswordService):
                 detail="Incorrect password",
                 headers={"WWW-Authenticate": "Bearer"},
             )
+        return user_query
+
+    def __user_context(self, user_model: UserModel) -> dict:
+        '''What to be retrieved by frontend'''
+        user_context = {
+            "id": user_model.id,
+            'name': user_model.name,
+            'dt_created': str(user_model.created_at),
+            "username": user_model.email,
+            "type": user_model.user_type
+        }
+        return user_context
+
+    def generate_user_jwt(self, username: str, password: str, session: Session):
+        # Confere se email/username está cadastrado
+        user_query = self.__db_check_user(username, password, session)
         # Adiciona contexto para os dados do usuário (dados que podem ser úteis para front)
-        user_context = self.__context(user_query)
+        user_context = self.__user_context(user_query)
         expire = datetime.utcnow() + Config.JWT_ACCESS_TOKEN_EXPIRES
         # Gerar token codificado
         encoded_jwt = jwt.encode(
