@@ -13,7 +13,6 @@ from structure.schemas import UserSchema, UserInsert, UserUpdate, \
     SaleInsert, PaymentSchema, PaymentUpdate, PaymentInsert
 from typing import Any, Union, List, Dict
 from fastapi import HTTPException, status
-from fastapi.responses import JSONResponse
 from structure import MakeOptionalPydantic
 
 

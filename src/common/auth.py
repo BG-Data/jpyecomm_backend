@@ -41,7 +41,7 @@ class AuthService(DatabaseSessions, PasswordService):
                 headers={"WWW-Authenticate": "Bearer"},
             )
         # Confere se a senha passada está correta
-        if not self.get_password(password, user_query.senha):
+        if not self.get_password(password, user_query.password):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Incorrect password",
