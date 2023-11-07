@@ -8,6 +8,7 @@ from loguru import logger
 import sys
 from fastapi import APIRouter, HTTPException, Depends, Request, status
 from datetime import date, datetime
+from utils import ModelChecker
 
 logger.add(sys.stderr, colorize=True,
            format="<yellow>{time}</yellow> {level} <green>{message}</green>",
@@ -20,44 +21,20 @@ class CrudService(DatabaseSessions):
                  schema: BaseModel):
         self.base_schema = schema
         self.model = model
+        self.model_util = ModelChecker(model)
 
-    def __check_model(self):
-        'Adicionar um kwarg checker para criar exceção do tipo Valor'
-        pass
-
-    def __filter_conditions(self, kwargs: dict) -> dict:
-        'Generic filtering conditions. >>>.No operators for now'
-        filter_conditions = []
-        values = {}
-        i = 0  # gambeta
-        for k, v in kwargs.items():
-            param_key = f"value_{i}"
-            values[param_key] = v
-            if isinstance(v, (int, float, bool)):
-                filter_conditions.append(f"{k} = :{param_key}")
-            elif isinstance(v, str):
-                filter_conditions.append(f"{k} LIKE :{param_key}")
-            elif isinstance(v, date, datetime):
-                filter_conditions.append(f"{k} BETWEEN :{param_key} AND {date.today()}")
-            i += 1
-        if i == 1:
-            return {"filter": ' '.join(filter_conditions),
-                    "values": values}
-        return {"filter": ' AND '.join(filter_conditions),
-                "values": values}
-    
     def get_itens(self,
                   kwargs: dict,
                   session: Session) -> List[BaseModel]:
         'Recupera itens de acordo com os argumentos adicionados em dicionário'
         try:
             item = session.query(self.model)
+            self.model_util.check_model_kwargs(kwargs)
+            kwargs = self.model_util.convert_model_attributes(kwargs)
             if (limit := kwargs.pop('limit', None)):
                 logger.info(f"Limite aplicado {limit}")
-            if (item_id := kwargs.pop('id', None)):
-                item = item.filter(self.model.id == item_id)
             if kwargs:
-                sql_filters = self.__filter_conditions(kwargs)
+                sql_filters = self.model_util.filter_conditions(kwargs)
                 item = item.filter(text(sql_filters.get('filter'))).params(sql_filters.get('values')).limit(limit)
             return [self.base_schema.model_validate(queried) for queried in item.all()]
         except Exception as exp:
@@ -155,10 +132,10 @@ class CrudApi(APIRouter):
             session: Session = Depends(get_session)):
         try:
             params = get_schema.query_params._dict
-            if id:
-                params.update({'id': int(id)})
-            else:
-                params.update({'limit': int(limit)})
+            # if id:
+            #     params.update({'id': int(id)})
+            # else:
+            #     params.update({'limit': int(limit)})
             return self.crud.get_itens(params, session)
         except Exception as exp:
             logger.error(f'Error at >>>>> get_item {exp}')
