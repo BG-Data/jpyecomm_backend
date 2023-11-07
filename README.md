@@ -27,7 +27,7 @@ Exemplificação das operações Back-Front-Infra
 
 > 4. Acesse a branch que desenvolvemos a primeira rota  no terminal digite ou no vscode ou outra IDE
 
-        git checkout feature/products
+        git checkout develop
 
 > 5. Inicialize o interpretador Venv criado pelo Poetry 
 
