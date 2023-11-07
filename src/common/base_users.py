@@ -24,13 +24,13 @@ class BaseUsers(PasswordService, CrudService):
         try:
             to_create = []
             dev = UserInsert(email='dev@ecomm.com',
-                             nome='dev',
-                             senha=self.hash_password(Config.DEV_PSWD),
-                             dt_nasc=date.today(),
+                             name='dev',
+                             password=self.hash_password(Config.DEV_PSWD),
+                             birth_date=date.today(),
                              lgpd=True,
-                             documento='',
-                             tipo_documento='',
-                             tipo_usuario='admin'
+                             document='',
+                             document_type='',
+                             user_type='admin'
                              )
 
             to_create.append(dev)

@@ -7,7 +7,7 @@ from common import DatabaseSessions
 from loguru import logger
 import sys
 from fastapi import APIRouter, HTTPException, Depends, Request, status
-from datetime import date
+from datetime import date, datetime
 
 logger.add(sys.stderr, colorize=True,
            format="<yellow>{time}</yellow> {level} <green>{message}</green>",
@@ -37,7 +37,7 @@ class CrudService(DatabaseSessions):
                 filter_conditions.append(f"{k} = :{param_key}")
             elif isinstance(v, str):
                 filter_conditions.append(f"{k} LIKE :{param_key}")
-            elif isinstance(v, date):
+            elif isinstance(v, date, datetime):
                 filter_conditions.append(f"{k} BETWEEN :{param_key} AND {date.today()}")
             i += 1
         if i == 1:
@@ -53,13 +53,12 @@ class CrudService(DatabaseSessions):
         try:
             item = session.query(self.model)
             if (limit := kwargs.pop('limit', None)):
-                # add pagination in the near future
-                item = item.limit(limit)
+                logger.info(f"Limite aplicado {limit}")
             if (item_id := kwargs.pop('id', None)):
                 item = item.filter(self.model.id == item_id)
             if kwargs:
                 sql_filters = self.__filter_conditions(kwargs)
-                item = item.filter(text(sql_filters.get('filter'))).params(sql_filters.get('values'))
+                item = item.filter(text(sql_filters.get('filter'))).params(sql_filters.get('values')).limit(limit)
             return [self.base_schema.model_validate(queried) for queried in item.all()]
         except Exception as exp:
             logger.error(f'Erro at >>>>> get_itens: {exp}')
@@ -151,7 +150,7 @@ class CrudApi(APIRouter):
 
     def get(self,
             id: int = None,
-            limit: int = None,
+            limit: int = 5,
             get_schema: Request = None,
             session: Session = Depends(get_session)):
         try:

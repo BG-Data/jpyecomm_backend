@@ -1,4 +1,10 @@
-# from enum import Enum
+from enum import Enum
+
+class UserType(str, Enum):
+    admin = 'admin'
+    vendedor = 'vendedor'
+    comprador = 'comprador'
+
 
 # class UserBase(BaseModel):
 #     model_config = ConfigDict(from_attributes=True)
@@ -23,3 +29,5 @@
 #     document: str
 #     document_type: str
 #     user_type: str
+
+

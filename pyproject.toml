@@ -20,6 +20,7 @@ pylint = "^3.0.2"
 python-multipart = "^0.0.6"
 python-jose = "^3.3.0"
 boto3 = "^1.28.78"
+pymysql = "^1.1.0"
 
 
 [build-system]
