@@ -42,29 +42,41 @@ tree -d -I __pycache__ >> tree.txt
 
 # Como iniciar a API 
 
-> 1. Baixe uma versão do Python maior our igual 3.8 ou maior 
+1. Baixe uma versão do Python maior our igual 3.8 ou maior 
 
-> 2. Adicione o Poetry como um pacote no seu python (no terminal digite) 
+2. Adicione o Poetry como um pacote no seu python (no **terminal** digite) 
 
-        pip install poetry
+```shell
+pip install poetry
+```
 
-> 3. Agora inicie, na pasta do ecomm_of_love,o pacote com poetry (no terminal digite) 
+3. Agora inicie, na pasta do ecomm_of_love,o pacote com poetry (no **terminal** digite) 
 
-        poetry install
+```shell
+poetry install
+```
 
-> 4. Acesse a branch que desenvolvemos a primeira rota  no terminal digite ou no vscode ou outra IDE
+4. Acesse a branch que desenvolvemos a primeira rota  no **terminal** digite ou no vscode ou outra IDE
 
-        git checkout develop
+```shell
+git checkout develop
+```
 
-> 5. Inicialize o interpretador Venv criado pelo Poetry 
+5. Inicialize o interpretador Venv criado pelo Poetry 
 
 * Pela [IDE](https://code.visualstudio.com/docs/python/environments)
-* Terminal -> source .venv/bin/activate
+* Terminal -> Ubuntu/Windows:
+```shell
+source .venv/bin/activate
+```
 
-> 6. Executar API 
+6. Executar API 
 
 * Pela [IDE](https://code.visualstudio.com/docs/python/environments)
-* Terminal -> $ `python3 main.py` 
+* Terminal -> Ubuntu/Windows:
+ ```shell
+ python3 main.py
+ ``` 
 
 # Como realizar migrações/modificações no db
 
