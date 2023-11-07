@@ -23,17 +23,17 @@ class AuthService(DatabaseSessions, PasswordService):
     def __context(self, user_model: UserModel) -> dict:
         user_context = {
             "id": user_model.id,
-            'name': user_model.nome,
+            'name': user_model.name,
             'dt_created': str(user_model.created_at),
             "username": user_model.email,
-            "type": user_model.tipo_usuario
+            "type": user_model.user_type
         }
         return user_context
 
     def generate_user_jwt(self, username: str, password: str, session: Session):
         # Confere se email/username está cadastrado
         user_query = session.query(UserModel).filter(or_(UserModel.email == username,
-                                                         UserModel.nome == username)).one_or_none()
+                                                         UserModel.name == username)).one_or_none()
         if not user_query:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -95,18 +95,6 @@ class AuthApi:
             session=session
         )
         return responses.JSONResponse(jwt, 200)
-    
-    # @staticmethod
-    # def get_user_context(token: Annotated[str, Depends(oauth2_scheme)]):
-    #     try:
-    #         payload = jwt.decode(token, Config.SECRET_KEY, algorithms=[Config.ALGORITHM])
-    #         return payload.get('context')
-    #     except JWTError as exc:
-    #         raise HTTPException(
-    #             status_code=status.HTTP_401_UNAUTHORIZED,
-    #             detail=f"Could not validate credentials {exc}",
-    #             headers={"WWW-Authenticate": "Bearer"},
-    #         )
 
     def auth_health(self, user_context: Annotated[dict, Depends(AuthService.get_auth_user_context)]):
         return responses.JSONResponse({

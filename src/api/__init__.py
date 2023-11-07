@@ -65,11 +65,11 @@ class UserApi(CrudApi):
                update_schema: MakeOptionalPydantic.make_partial_model(UserUpdate),
                session: Session = Depends(get_session)):
         
-        if update_schema.model_dump(exclude_unset=True).get('velha_senha'):
-            valid = self.password_service.get_password(update_schema.velha_senha,
-                                                       self.crud.get_itens({'id': id}, session)[0].senha)
-            update_schema.velha_senha = None
-            update_schema.senha = self.password_service.hash_password(update_schema.senha)
+        if update_schema.model_dump(exclude_unset=True).get('old_password'):
+            valid = self.password_service.get_password(update_schema.old_password,
+                                                       self.crud.get_itens({'id': id}, session)[0].password)
+            update_schema.old_password = None
+            update_schema.password = self.password_service.hash_password(update_schema.password)
             if not valid:
                 raise HTTPException(status_code=401, detail={
                     'status_code': status.HTTP_401_UNAUTHORIZED,
