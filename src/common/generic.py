@@ -8,7 +8,7 @@ from loguru import logger
 import sys
 from fastapi import APIRouter, HTTPException, Depends, Request, status
 from datetime import date, datetime
-from utils import ModelChecker
+from utils import ModelUtils
 
 logger.add(sys.stderr, colorize=True,
            format="<yellow>{time}</yellow> {level} <green>{message}</green>",
@@ -21,7 +21,7 @@ class CrudService(DatabaseSessions):
                  schema: BaseModel):
         self.base_schema = schema
         self.model = model
-        self.model_util = ModelChecker(model)
+        self.model_util = ModelUtils(model)
 
     def get_itens(self,
                   kwargs: dict,
