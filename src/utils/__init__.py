@@ -10,7 +10,7 @@ logger.add(sys.stderr, colorize=True,
            filter="Utils", level="INFO")
 
 
-class ModelChecker:
+class ModelUtils:
     '''RDS Model oriented utilitarians'''
 
     def __init__(self, model: Base):
