@@ -139,7 +139,7 @@ class CrudApi(APIRouter):
             return self.crud.get_itens(params, session)
         except Exception as exp:
             logger.error(f'Error at >>>>> get_item {exp}')
-            raise exp
+            raise HTTPException(status_code=400, detail=str(exp))
 
     def insert(self,
                insert_schema: BaseModel,
@@ -149,7 +149,7 @@ class CrudApi(APIRouter):
             return self.crud.insert_item(insert_schema, session)
         except Exception as exp:
             logger.error(f'Error at >>>>> insert_item {exp}')
-            raise exp
+            raise HTTPException(status_code=400, detail=str(exp))
 
     def update(self,
                item_id: int,
@@ -160,7 +160,7 @@ class CrudApi(APIRouter):
             return self.crud.update_item(item_id, update_schema, session)
         except Exception as exp:
             logger.error(f'Error at >>>>> update_item {exp}')
-            raise exp
+            raise HTTPException(status_code=400, detail=str(exp))
     
     def delete(self,
                item_id: int,
@@ -169,4 +169,4 @@ class CrudApi(APIRouter):
             return self.crud.delete_item(item_id, session)
         except Exception as exp:
             logger.error(f'Error at >>>>> delete_item {exp}')
-            raise exp
+            raise HTTPException(status_code=400, detail=str(exp))
