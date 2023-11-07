@@ -54,7 +54,7 @@ class UserApi(CrudApi):
                insert_schema: UserInsert,
                session: Session = Depends(get_session)):
         try:
-            insert_schema.senha = self.password_service.hash_password(insert_schema.senha)
+            insert_schema.password = self.password_service.hash_password(insert_schema.password)
             return self.crud.insert_item(insert_schema, session)
         except Exception as exp:
             logger.error(f'error at insert {self.__class__.__name__} {exp}')

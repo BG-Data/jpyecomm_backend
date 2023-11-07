@@ -11,6 +11,7 @@ logger.add(sys.stderr, colorize=True,
 
 
 class ModelChecker:
+    '''RDS Model oriented utilitarians'''
 
     def __init__(self, model: Base):
         self.model: Base = model
@@ -32,10 +33,11 @@ class ModelChecker:
         return value
 
     def filter_conditions(self, kwargs: dict) -> dict:
+        # TODO -> Needs to be refactored for a better and scalable item : operator : value method (Working front-back contract)
         'Generic filtering conditions. >>>.No operators for now -> it`s possible and nice!'
         filter_conditions = []
         values = {}
-        i = 0  # gambeta
+        i = 0
         for k, v in kwargs.items():
             param_key = f"value_{i}"
             values[param_key] = v
@@ -47,7 +49,7 @@ class ModelChecker:
             elif isinstance(v, (date, datetime)):
                 filter_conditions.append(f"{k} >= :{param_key}")
             i += 1
-        if i == 1:
+        if len(kwargs) == 1:
             return {"filter": ' '.join(filter_conditions),
                     "values": values}
         return {"filter": ' AND '.join(filter_conditions),

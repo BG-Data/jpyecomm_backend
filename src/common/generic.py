@@ -32,10 +32,13 @@ class CrudService(DatabaseSessions):
             self.model_util.check_model_kwargs(kwargs)
             kwargs = self.model_util.convert_model_attributes(kwargs)
             if (limit := kwargs.pop('limit', None)):
-                logger.info(f"Limite aplicado {limit}")
+                logger.info(f"limite aplicado {limit}")
+            if (offset := kwargs.pop('offset', 0)):
+                logger.info(f"offset aplicado {offset}")
             if kwargs:
                 sql_filters = self.model_util.filter_conditions(kwargs)
-                item = item.filter(text(sql_filters.get('filter'))).params(sql_filters.get('values')).limit(limit)
+                item = item.filter(text(sql_filters.get('filter'))).params(sql_filters.get('values'))\
+                    .limit(limit).offset(offset)
             return [self.base_schema.model_validate(queried) for queried in item.all()]
         except Exception as exp:
             logger.error(f'Erro at >>>>> get_itens: {exp}')
@@ -100,16 +103,6 @@ class CrudService(DatabaseSessions):
             logger.error(f'Error at >>>>> [Function name]: {exp}')
             raise exp
 
-    def __template_itens(self,
-                        item_id: int,
-                        schema: BaseModel,
-                        session: Session):
-        try:
-            pass
-        except Exception as exp:
-            logger.error(f'Error at >>>>> [Function name]: {exp}')
-            raise exp
-
 
 class CrudApi(APIRouter):
 
@@ -132,10 +125,6 @@ class CrudApi(APIRouter):
             session: Session = Depends(get_session)):
         try:
             params = get_schema.query_params._dict
-            # if id:
-            #     params.update({'id': int(id)})
-            # else:
-            #     params.update({'limit': int(limit)})
             return self.crud.get_itens(params, session)
         except Exception as exp:
             logger.error(f'Error at >>>>> get_item {exp}')
