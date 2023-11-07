@@ -12,6 +12,33 @@ Exemplificação das operações Back-Front-Infra
 | Develop | develop-ecomm-db.cvzwreo61y01.us-east-1.rds.amazonaws.com:3306/ecomm | .env ou infisical(TODO) |   |   |
 |  Prod | - | - | - | - |
 
+<!-- Make the tree with tre -d -I __pycache__ >> tree.txt -->
+
+Faça a sua árvore:
+
+Ubuntu 
+```shell
+sudo apt-get install tree 
+```
+
+ ```shell
+ tree -d -I __pycache__ >> tree.txt
+ ```
+```shell
+.
+├── images # for docs only
+└── src # app source folder
+    ├── api # setted apis
+    ├── app # application services and else
+    │   └── checkout
+    ├── common # common solutions used through out the app
+    ├── migrations # Run migrations for db
+    │   └── versions
+    ├── routes # route initing for app
+    ├── structure # db schema, models, connector and else
+    └── utils # utilitarians for the app (used when needed and not frequently as the common)
+```
+
 
 # Como iniciar a API 
 
