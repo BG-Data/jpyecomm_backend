@@ -1,19 +1,26 @@
 from pydantic import BaseModel, ConfigDict
 from datetime import date, datetime
-from typing import Optional
+from typing import Optional, Union
 from decimal import Decimal
 from settings import Config
 # Usuários
 from structure.enums import UserType
 
+
 class PydanticModel(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    # created_at: Optional[datetime] = datetime.utcnow()
-    # updated_at: Optional[datetime] = datetime.utcnow()
+
+    # @validator('*', pre=True)
+    # def format_date_fields(cls, v):
+    #     if isinstance(v, date):
+    #         return v.strftime('%d-%m-%Y')
+    #     elif isinstance(v, datetime):
+    #         return v.strftime('%d-%m-%Y %H:%M:%S')
+    #     return v
 
 
 class Health(PydanticModel):
-    datetime: str = datetime.utcnow().strftime("%Y/%m/%d %H:%M:%S")
+    datetime: str = datetime.utcnow().strftime("%d-%m-%Y %H:%M:%S")
     status: str = 'ok'
     environment: str = Config.SCHEMA
 
@@ -24,9 +31,11 @@ class UserBase(PydanticModel):
 
 class UserSchema(UserBase):
     id: int
+    created_at: datetime
+    updated_at: datetime
     name: str
     password: str
-    birth_date: date
+    birthdate: date
     lgpd: bool
     document: str
     document_type: str
@@ -37,7 +46,7 @@ class UserSchema(UserBase):
 class UserInsert(UserBase):
     name: str
     password: str
-    birth_date: date
+    birthdate: date
     lgpd: bool
     document: str
     document_type: str
@@ -60,6 +69,8 @@ class ProductBase(PydanticModel):
 
 class ProductSchema(ProductBase):
     id: int
+    created_at: datetime
+    updated_at: datetime
     infos: str
     category: bool
     details: str
@@ -70,6 +81,7 @@ class ProductSchema(ProductBase):
 
 class ProductInsert(ProductBase):
     infos: str
+    user_id: int
     category: bool
     details: str
     url: str
@@ -95,6 +107,8 @@ class AddressBase(PydanticModel):
 
 class AddressSchema(AddressBase):
     id: int
+    created_at: datetime
+    updated_at: datetime
     complement: str
     reference_point: str
     address_type: str
@@ -125,6 +139,8 @@ class PaymentBase(PydanticModel):
 
 class PaymentSchema(PaymentBase):
     id: int
+    created_at: datetime
+    updated_at: datetime
     payment_type: str
     user_id: int
 
@@ -150,6 +166,8 @@ class SaleBase(PydanticModel):
 
 class SaleSchema(SaleBase):
     id: int
+    created_at: datetime
+    updated_at: datetime
     currency_type: str
     shipping_time: int
     delivery_type: str
