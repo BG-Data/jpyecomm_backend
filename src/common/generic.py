@@ -29,16 +29,17 @@ class CrudService(DatabaseSessions):
         'Recupera itens de acordo com os argumentos adicionados em dicionário'
         try:
             item = session.query(self.model)
-            self.model_util.check_model_kwargs(kwargs)
-            kwargs = self.model_util.convert_model_attributes(kwargs)
             if (limit := kwargs.pop('limit', None)):
                 logger.info(f"limite aplicado {limit}")
+                limit = int(limit)
             if (offset := kwargs.pop('offset', 0)):
                 logger.info(f"offset aplicado {offset}")
+            self.model_util.check_model_kwargs(kwargs)
+            kwargs = self.model_util.convert_model_attributes(kwargs)
             if kwargs:
                 sql_filters = self.model_util.filter_conditions(kwargs)
-                item = item.filter(text(sql_filters.get('filter'))).params(sql_filters.get('values'))\
-                    .limit(limit).offset(offset)
+                item = item.filter(text(sql_filters.get('filter'))).params(sql_filters.get('values'))
+            item = item.limit(limit).offset(offset)
             return [self.base_schema.model_validate(queried) for queried in item.all()]
         except Exception as exp:
             logger.error(f'Erro at >>>>> get_itens: {exp}')
@@ -121,6 +122,7 @@ class CrudApi(APIRouter):
     def get(self,
             id: int = None,
             limit: int = 5,
+            offset: int = 0,
             get_schema: Request = None,
             session: Session = Depends(get_session)):
         try:

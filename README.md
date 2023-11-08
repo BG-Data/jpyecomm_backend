@@ -12,32 +12,71 @@ Exemplificação das operações Back-Front-Infra
 | Develop | develop-ecomm-db.cvzwreo61y01.us-east-1.rds.amazonaws.com:3306/ecomm | .env ou infisical(TODO) |   |   |
 |  Prod | - | - | - | - |
 
+<!-- Make the tree with tre -d -I __pycache__ >> tree.txt -->
+
+## A árvore:
+
+* **Ubuntu** 
+```shell
+sudo apt-get install tree 
+```
+* **Execute** no terminal
+ ```shell
+tree -d -I __pycache__ >> tree.txt
+ ```
+```shell
+.
+├── images # for docs only
+└── src # app source folder
+    ├── api # setted apis
+    ├── app # application services and else
+    │   └── checkout
+    ├── common # common solutions used through out the app
+    ├── migrations # Run migrations for db
+    │   └── versions
+    ├── routes # route initing for app
+    ├── structure # db schema, models, connector and else
+    └── utils # utilitarians for the app (used when needed and not frequently as the common)
+```
+
 
 # Como iniciar a API 
 
-> 1. Baixe uma versão do Python maior our igual 3.8 ou maior 
+1. Baixe uma versão do Python maior our igual 3.8 ou maior 
 
-> 2. Adicione o Poetry como um pacote no seu python (no terminal digite) 
+2. Adicione o Poetry como um pacote no seu python (no **terminal** digite) 
 
-        pip install poetry
+```shell
+pip install poetry
+```
 
-> 3. Agora inicie, na pasta do ecomm_of_love,o pacote com poetry (no terminal digite) 
+3. Agora inicie, na pasta do ecomm_of_love,o pacote com poetry (no **terminal** digite) 
 
-        poetry install
+```shell
+poetry install
+```
 
-> 4. Acesse a branch que desenvolvemos a primeira rota  no terminal digite ou no vscode ou outra IDE
+4. Acesse a branch que desenvolvemos a primeira rota  no **terminal** digite ou no vscode ou outra IDE
 
-        git checkout feature/products
+```shell
+git checkout develop
+```
 
-> 5. Inicialize o interpretador Venv criado pelo Poetry 
+5. Inicialize o interpretador Venv criado pelo Poetry 
 
 * Pela [IDE](https://code.visualstudio.com/docs/python/environments)
-* Terminal -> source .venv/bin/activate
+* Terminal -> Ubuntu/Windows:
+```shell
+source .venv/bin/activate
+```
 
-> 6. Executar API 
+6. Executar API 
 
 * Pela [IDE](https://code.visualstudio.com/docs/python/environments)
-* Terminal -> $ `python3 main.py` 
+* Terminal -> Ubuntu/Windows:
+ ```shell
+ python3 main.py
+ ``` 
 
 # Como realizar migrações/modificações no db
 

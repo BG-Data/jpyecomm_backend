@@ -47,7 +47,7 @@ class UserApi(CrudApi):
                            self.delete,
                            methods=['DELETE'],
                            response_model=Union[schema, Any, Dict[str, str]])
-        self.user_service = UserService(model, schema)
+        self.service = UserService(model, schema)
         self.password_service = PasswordService()
 
     def insert(self,
@@ -105,12 +105,27 @@ class ProductApi(CrudApi):
                            self.delete,
                            methods=['DELETE'],
                            response_model=Union[schema, Any, Dict[str, str]])
+        # self.add_api_route('/caminho',
+        #                    self.metodo_novo,
+        #                    methods=['GET'],
+        #                    response_model=dict)
 
-        self.user_service = ProductService(model, schema)
+        self.service = ProductService(model, schema)
+
+    # def metodo_novo(self,
+    #                 id: int,
+    #                 session: Session = Depends(get_session)):
+    #     try:
+    #         resultado = session.query(ProductModel).all()
+    #     except ValueError as exp:
+    #         return f'Dado errado colocado aqui {exp}'
+    #     except Exception as exp:
+    #         logger.error(f" error do metodo novo: {exp}")
 
     def insert(self,
                insert_schema: ProductInsert,
                session: Session = Depends(get_session)):
+        # TODO (André) -> Criar HttpException para o caso do usuário não existir ou não for vendendor ou admin 
         try:
             return self.crud.insert_item(insert_schema, session)
         except Exception as exp:
@@ -120,6 +135,7 @@ class ProductApi(CrudApi):
                id: int,
                update_schema: MakeOptionalPydantic.make_partial_model(ProductUpdate),
                session: Session = Depends(get_session)):
+        # TODO (André) -> Criar HttpException para o caso do usuário não existir ou não for vendendor ou admin 
         try:
             return self.crud.update_item(id, update_schema, session)
         except Exception as exp:
@@ -153,7 +169,7 @@ class PaymentApi(CrudApi):
                            methods=['DELETE'],
                            response_model=Union[schema, Any, Dict[str, str]])
 
-        self.user_service = PaymentService(model, schema)
+        self.service = PaymentService(model, schema)
 
     def insert(self,
                insert_schema: PaymentInsert,
@@ -200,11 +216,13 @@ class SaleApi(CrudApi):
                            methods=['DELETE'],
                            response_model=Union[schema, Any, Dict[str, str]])
 
-        self.user_service = SaleService(model, schema)
+        self.service = SaleService(model, schema)
 
     def insert(self,
                insert_schema: SaleInsert,
                session: Session = Depends(get_session)):
+        # TODO (André) -> Criar HttpException para o caso do usuário/produto/endereço/pagamento, etc não existir ou não for vendendor ou admin 
+
         try:
             return self.crud.insert_item(insert_schema, session)
         except Exception as exp:
@@ -214,6 +232,8 @@ class SaleApi(CrudApi):
                id: int,
                update_schema: MakeOptionalPydantic.make_partial_model(SaleUpdate),
                session: Session = Depends(get_session)):
+        # TODO (André) -> Criar HttpException para o caso do usuário/produto/endereço/pagamento, etc não existir ou não for vendendor ou admin 
+
         try:
             return self.crud.update_item(id, update_schema, session)
         except Exception as exp:
@@ -247,7 +267,7 @@ class AddressApi(CrudApi):
                            methods=['DELETE'],
                            response_model=Union[schema, Any, Dict[str, str]])
 
-        self.user_service = AddressService(model, schema)
+        self.service = AddressService(model, schema)
 
     def insert(self,
                insert_schema: AddressInsert,

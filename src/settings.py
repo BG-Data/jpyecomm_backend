@@ -23,4 +23,7 @@ class Config:
     ALGORITHM = config('ALGORITHM', cast=str, default='HS256')
     SCHEMA = config('SCHEMA', default='test', cast=str)
     DEV_PSWD = config('DEV_PSWD', cast=str, default='teste')
-    MERCADO_PAGO_ACCESS_TOKEN = config('MERCADO_PAGO_ACCESS_TOKEN', cast=str)
+    MERCADO_PAGO_ACCESS_TOKEN = config('MERCADO_PAGO_ACCESS_TOKEN', cast=str, default='')
+
+#OBS
+# Sem acesso à AWS, a senha e usuário são teste e dev respectivamente (SQLITE)
