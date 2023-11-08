@@ -81,6 +81,7 @@ class ProductSchema(ProductBase):
 
 class ProductInsert(ProductBase):
     infos: str
+    user_id: int
     category: bool
     details: str
     url: str
