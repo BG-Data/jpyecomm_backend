@@ -38,7 +38,7 @@ class UserModel(DefaultModel):
     name = Column(String(255), index=True, nullable=False)
     password = Column(String(100), nullable=False)
     email = Column(String(100), nullable=False, index=True, unique=True)
-    birth_date = Column(Date, nullable=False, index=True)
+    birthdate = Column(Date, nullable=False, index=True)
     lgpd = Column(Boolean, nullable=False)
     document = Column(String(18), nullable=False, index=True, unique=True)
     document_type = Column(String(10), nullable=False)

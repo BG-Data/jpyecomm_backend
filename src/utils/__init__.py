@@ -57,23 +57,20 @@ class ModelUtils:
 
     def convert_model_attributes(self, kwargs: dict) -> dict:
         'Converte os kwargs retornados para o tipo especificado pelo modelo'
-        inspector = inspect(self.model)
-        attr_names = [column_attr.key for column_attr in inspector.mapper.column_attrs]
         converted_kwargs = {}
         for key, value in kwargs.items():
-            if key in attr_names:
-                attr_type = getattr(self.model, key).type.python_type
-                try:
-                    if attr_type is bool:
-                        value = self.__bool_handler(value)
-                    if attr_type is date or attr_type is date:
-                        converted_value = self.__datetime_handler(value, attr_type)
-                    else:
-                        converted_value = attr_type(value)
-                    converted_kwargs[key] = converted_value
-                except ValueError as exp:
-                    logger.error(exp)
-                    raise ValueError(f"Could not convert {key} to {attr_type.__name__}. >>> {exp}")
+            attr_type = getattr(self.model, key).type.python_type
+            try:
+                if attr_type is bool:
+                    value = self.__bool_handler(value)
+                if attr_type is date or attr_type is date:
+                    converted_value = self.__datetime_handler(value, attr_type)
+                else:
+                    converted_value = attr_type(value)
+                converted_kwargs[key] = converted_value
+            except ValueError as exp:
+                logger.error(exp)
+                raise ValueError(f"Could not convert {key} to {attr_type.__name__}. >>> {exp}")
         return converted_kwargs
 
     def check_model_types(self, kwargs: dict) -> None:

@@ -26,7 +26,7 @@ class BaseUsers(PasswordService, CrudService):
             dev = UserInsert(email='dev@ecomm.com',
                              name='dev',
                              password=self.hash_password(Config.DEV_PSWD),
-                             birth_date=date.today(),
+                             birthdate=date.today(),
                              lgpd=True,
                              document='',
                              document_type='',
