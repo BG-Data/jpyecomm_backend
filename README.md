@@ -26,17 +26,17 @@ tree -d -I __pycache__ >> tree.txt
  ```
 ```shell
 .
-├── images # for docs only
-└── src # app source folder
-    ├── api # setted apis
-    ├── app # application services and else
-    │   └── checkout
-    ├── common # common solutions used through out the app
-    ├── migrations # Run migrations for db
-    │   └── versions
-    ├── routes # route initing for app
-    ├── structure # db schema, models, connector and else
-    └── utils # utilitarians for the app (used when needed and not frequently as the common)
+├── images # Arquivo e imagens do readme
+└── src # Pasta fonte da aplicação
+    ├── api # APIs desenvolvidas
+    ├── app # Camada de domínio e serviços
+    │   └── checkout # Módulo de checkout 
+    ├── common # Pacotes comuns desenvolvidos e amplamente utilizados pela aplicação
+    ├── migrations # Opera atividades de alteração do banco de dados
+    │   └── versions
+    ├── routes # Rotas ou CRUD ativas
+    ├── structure # Abstração do banco de dados, esquemas, conectores, etc
+    └── utils # Utilitários da aplicação (Usados mas não tão frequentemente)
 ```
 
 
