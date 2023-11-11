@@ -1,12 +1,17 @@
 import os
+from infisical import InfisicalClient
 from decouple import config
 from datetime import timedelta
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-# load_dotenv(os.path.join(basedir, '.env'))
-
 
 class Config:
+    ENVIRONMENT = config('ENVIRONMENT', default='test', cast=str)
+
+    if config('INFISICAL_TOKEN'):
+        client = InfisicalClient(token=config('INFISICAL_TOKEN'))
+        client.get_all_secrets(environment=ENVIRONMENT,
+                               path='/')
     PORT = config("PORT", default=5000, cast=int)
     UVICORN_WORKERS = config("UVICORN_WORKERS", default=1, cast=int)
     PSQL_USER = config("PSQL_USER", default='', cast=str)
@@ -21,7 +26,6 @@ class Config:
     JWT_ACCESS_TOKEN_EXPIRES = config('JWT_ACCESS_TOKEN_EXPIRES', default=timedelta(hours=1))
     SECRET_KEY = config('SECRET_KEY', cast=str, default='teste')
     ALGORITHM = config('ALGORITHM', cast=str, default='HS256')
-    SCHEMA = config('SCHEMA', default='test', cast=str)
     DEV_PSWD = config('DEV_PSWD', cast=str, default='teste')
     MERCADO_PAGO_ACCESS_TOKEN = config('MERCADO_PAGO_ACCESS_TOKEN', cast=str, default='')
 
