@@ -3,7 +3,6 @@ from routes import init_app
 from settings import Config
 
 app = init_app()
-
 app_base_configs = {
     "host": "0.0.0.0",
     "port": Config.PORT,
