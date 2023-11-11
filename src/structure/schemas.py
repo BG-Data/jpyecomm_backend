@@ -22,7 +22,7 @@ class PydanticModel(BaseModel):
 class Health(PydanticModel):
     datetime: str = datetime.utcnow().strftime("%d-%m-%Y %H:%M:%S")
     status: str = 'ok'
-    environment: str = Config.SCHEMA
+    environment: str = Config.ENVIRONMENT
 
 
 class UserBase(PydanticModel):
