@@ -25,6 +25,11 @@ class UserNotFoundException(HTTPException):
         detail = "O usuário não encontrado."
         super().__init(status_code=status.HTTP_404_NOT_FOUND, detail=detail)
 
+class UnauthorizedUserException(HTTPException):
+    def __init__(self):
+        detail = "Usuário não é vendedor nem administrador."
+        super().__init(status_code=status.HTTP_401_UNAUTHORIZED, detail=detail)
+
 class UserApi(CrudApi):
     def __init__(self,
                  model: UserModel = UserModel,
@@ -129,9 +134,20 @@ class ProductApi(CrudApi):
     def insert(self,
                insert_schema: ProductInsert,
                session: Session = Depends(get_session)):
-        # TODO (André) -> Criar HttpException para o caso do usuário não existir ou não for vendendor ou admin 
+        # TODO (André) -> Criar HttpException para o caso do usuário não existir ou não for vendedor ou admin 
+    
+        user = self.get_user_by_id(insert_schema.user_id)
         if user is None:
             raise UserNotFoundException()
+
+        if not (user.is_vendor or user.is_admin):
+            raise UnauthorizedUserException()
+        
+        try:
+            return self.crud.insert_item(insert_schema, session)
+        
+        except Exception as exp:
+            logger.error(f'error at insert {self.__class__.__name__} {exp}')
     
     def update(self,
                id: int,
