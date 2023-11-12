@@ -20,6 +20,10 @@ logger.add(sys.stderr, colorize=True,
            format="<yellow>{time}</yellow> {level} <green>{message}</green>",
            filter="Api", level="INFO")
 
+class UserNotFoundException(HTTPException):
+    def __init__(self):
+        detail = "O usuário não encontrado."
+        super().__init(status_code=status.HTTP_404_NOT_FOUND, detail=detail)
 
 class UserApi(CrudApi):
     def __init__(self,
@@ -126,10 +130,8 @@ class ProductApi(CrudApi):
                insert_schema: ProductInsert,
                session: Session = Depends(get_session)):
         # TODO (André) -> Criar HttpException para o caso do usuário não existir ou não for vendendor ou admin 
-        try:
-            return self.crud.insert_item(insert_schema, session)
-        except Exception as exp:
-            logger.error(f'error at insert {self.__class__.__name__} {exp}')
+        if user is None:
+            raise UserNotFoundException()
     
     def update(self,
                id: int,
