@@ -1,11 +1,11 @@
 from pydantic import BaseModel, ConfigDict
 from datetime import date, datetime
-from typing import Optional, Union
+from typing import Optional, Union, List
 from decimal import Decimal
 from settings import Config
 # Usuários
-from structure.enums import UserType
-
+from utils.enums import UserType
+f
 
 class PydanticModel(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -205,3 +205,11 @@ class SaleInsert(SaleBase):
 
 class SaleUpdate(SaleInsert):
     pass
+
+
+class CheckoutPayload(PydanticModel):
+    items = List[CheckoutItems]
+    payer: CheckoutPayer
+    identification: CheckoutId
+    address: CheckoutAddr
+    
