@@ -6,6 +6,12 @@ class UserType(str, Enum):
     comprador = 'comprador'
 
 
+class CheckoutStatus(str, Enum):
+    # TODO -> add checkout redirection URL for each status
+    success = "success"
+    failure = "failure"
+    pending = "pending"
+
 # class UserBase(BaseModel):
 #     model_config = ConfigDict(from_attributes=True)
 #     email: str
