@@ -15,7 +15,7 @@ logger.add(sys.stderr, colorize=True,
 class Config:
 
     ENVIRONMENT = config('ENVIRONMENT', default='test', cast=str)
-    INFISICAL_TOKEN = config('INFISICAL_TOKEN')
+    #INFISICAL_TOKEN = config('INFISICAL_TOKEN')
     DATABASE_URL = config('DATABASE_URL', default='', cast=str) or 'sqlite:///' + os.path.join(basedir, 'test.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     CRIPTOCODE = config("CRIPTOCODE", cast=str, default='teste')
