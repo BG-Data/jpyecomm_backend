@@ -29,6 +29,7 @@ class CrudService(DatabaseSessions):
         # TODO -> refatorar para incluir cinco esquemas em um padrão de contrato front/back bem definido para: filtros, ordernação, agrupamento, limit/offset/paginação e joins
         'Recupera itens de acordo com os argumentos adicionados em dicionário'
         try:
+            sql_order_by_list = []
             item = session.query(self.model)
             if (limit := kwargs.pop('limit', 10)):
                 logger.info(f"limite aplicado {limit}")
@@ -41,7 +42,7 @@ class CrudService(DatabaseSessions):
                 sql_order_by_list, kwargs = self.model_util.order_by_conditions(kwargs)
                 sql_filters = self.model_util.filter_conditions(kwargs)
                 item = item.filter(text(sql_filters.get('filter'))).params(sql_filters.get('values'))
-            item = item.limit(limit).offset(offset).order_by(*sql_order_by_list)
+            item = item.order_by(*sql_order_by_list).limit(limit).offset(offset)
             return [self.base_schema.model_validate(queried) for queried in item.all()]
         except Exception as exp:
             logger.error(f'Erro at >>>>> get_itens: {exp}')

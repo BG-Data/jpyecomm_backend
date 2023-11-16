@@ -50,8 +50,7 @@ def init_routes(app: FastAPI, api_routes: dict):
         return Health().model_dump()
 
     for route_key in api_routes.keys():
-        app.include_router(**api_routes.get(route_key),
-                           dependencies=[Depends(AuthService.get_auth_user_context)])
+        app.include_router(**api_routes.get(route_key))
     return app
 
 

@@ -110,5 +110,5 @@ class AuthApi:
         return responses.JSONResponse({
             "datetime": datetime.utcnow().strftime("%Y/%m/%d %H:%M:%S"),
             "status": "ok",
-            'user': user_context['name']
+            'user_context': user_context
         }, 200)

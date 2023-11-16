@@ -5,7 +5,7 @@ from decimal import Decimal
 from settings import Config
 # Usuários
 from utils.enums import UserType
-f
+
 
 class PydanticModel(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -207,9 +207,4 @@ class SaleUpdate(SaleInsert):
     pass
 
 
-class CheckoutPayload(PydanticModel):
-    items = List[CheckoutItems]
-    payer: CheckoutPayer
-    identification: CheckoutId
-    address: CheckoutAddr
-    
+
