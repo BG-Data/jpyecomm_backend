@@ -87,8 +87,8 @@ class ProductModel(DefaultModel):
     personalized_name = Column(String(255))
     personalized_type = Column(String(255), nullable=True)
 
-    register_id = Column(Integer, ForeignKey('users.id'),
-                         nullable=False)  # quem criou
+    user_id = Column(Integer, ForeignKey('users.id'),
+                     nullable=False)  # quem criou
 
     user = relationship('UserModel', back_populates='products')
     product_sale = relationship('SaleModel', back_populates='sale_product')
