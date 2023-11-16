@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from api import UserApi, ProductApi, SaleApi, AddressApi, PaymentApi
 from structure.schemas import Health
 from common.auth import AuthApi, AuthService
@@ -10,6 +11,17 @@ import sys
 logger.add(sys.stderr, colorize=True,
            format="<yellow>{time}</yellow> {level} <green>{message}</green>",
            filter="Init api", level="INFO")
+
+
+def init_middlewares(app: FastAPI):
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=False,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+    return app
 
 
 def init_app():
@@ -35,6 +47,7 @@ def init_app():
                         'tags': ['Métodos de Pagamento'],
                         'prefix': '/payment_methods'}
                   }
+    app = init_middlewares(app)
     app = init_auth(app)
     app = init_routes(app, api_routes)
     Base.metadata.create_all(bind=engine)
