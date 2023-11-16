@@ -1,10 +1,10 @@
 from pydantic import BaseModel, ConfigDict
 from datetime import date, datetime
-from typing import Optional, Union
+from typing import Optional, Union, List
 from decimal import Decimal
 from settings import Config
 # Usuários
-from structure.enums import UserType
+from utils.enums import UserType
 
 
 class PydanticModel(BaseModel):
@@ -22,7 +22,7 @@ class PydanticModel(BaseModel):
 class Health(PydanticModel):
     datetime: str = datetime.utcnow().strftime("%d-%m-%Y %H:%M:%S")
     status: str = 'ok'
-    environment: str = Config.SCHEMA
+    environment: str = Config.ENVIRONMENT
 
 
 class UserBase(PydanticModel):
@@ -81,7 +81,7 @@ class ProductSchema(ProductBase):
 
 class ProductInsert(ProductBase):
     infos: str
-    user_id: int
+    register_id: int
     category: bool
     details: str
     url: str
@@ -205,3 +205,6 @@ class SaleInsert(SaleBase):
 
 class SaleUpdate(SaleInsert):
     pass
+
+
+

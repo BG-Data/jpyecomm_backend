@@ -1,9 +1,9 @@
-from sqlalchemy import inspect
+from sqlalchemy import inspect, asc, desc
 from structure.connectors import Base
 from loguru import logger
 import sys
 from datetime import date, datetime
-from typing import Union
+from typing import Union, Tuple
 
 logger.add(sys.stderr, colorize=True,
            format="<yellow>{time}</yellow> {level} <green>{message}</green>",
@@ -22,7 +22,7 @@ class ModelUtils:
         if value.lower() == 'true':
             return 1
         return value
-    
+
     def __datetime_handler(self, value: str,
                            date_type: Union[date, datetime]
                            ) -> Union[datetime, date]:
@@ -31,6 +31,17 @@ class ModelUtils:
         else:
             value = datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
         return value
+
+    def order_by_conditions(self, kwargs: dict) -> Tuple[list, dict]:
+        order_by = []
+        for column, order in kwargs.items():
+            if order == 'asc':
+                order_by.append(asc(column))
+                kwargs.pop({column})
+            elif order == 'desc':
+                order_by.append(desc(column))
+                kwargs.pop({column})
+        return order_by, kwargs
 
     def filter_conditions(self, kwargs: dict) -> dict:
         # TODO -> Needs to be refactored for a better and scalable item : operator : value method (Working front-back contract)
@@ -77,7 +88,7 @@ class ModelUtils:
         'Adicionar um kwarg checker para criar exceção do tipo TypeError'
         inspector = inspect(self.model)
         attr_names = [column_attr.key for column_attr in inspector.mapper.column_attrs]
-        
+
         for key, value in kwargs.items():
             if key in attr_names:
                 attr_type = type(getattr(self.model, key))

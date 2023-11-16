@@ -14,6 +14,7 @@ from structure.schemas import UserSchema, UserInsert, UserUpdate, \
 from typing import Any, Union, List, Dict
 from fastapi import HTTPException, status
 from structure import MakeOptionalPydantic
+from common.auth import AuthService
 
 
 logger.add(sys.stderr, colorize=True,
@@ -34,7 +35,8 @@ class UserApi(CrudApi):
                            self.get,
                            methods=['GET'],
                            response_model=Union[List[schema],
-                                                schema, Any])
+                                                schema, Any],
+                           dependencies=[Depends(AuthService.get_auth_user_context)])
         self.add_api_route('/',
                            self.insert,
                            methods=['POST'],
@@ -42,11 +44,13 @@ class UserApi(CrudApi):
         self.add_api_route('/',
                            self.update,
                            methods=['PUT'],
-                           response_model=Union[schema, Any])
+                           response_model=Union[schema, Any],
+                           dependencies=[Depends(AuthService.get_auth_user_context)])
         self.add_api_route('/',
                            self.delete,
                            methods=['DELETE'],
-                           response_model=Union[schema, Any, Dict[str, str]])
+                           response_model=Union[schema, Any, Dict[str, str]],
+                           dependencies=[Depends(AuthService.get_auth_user_context)])
         self.service = UserService(model, schema)
         self.password_service = PasswordService()
 
@@ -96,15 +100,18 @@ class ProductApi(CrudApi):
         self.add_api_route('/',
                            self.insert,
                            methods=['POST'],
-                           response_model=Union[schema, Any])
+                           response_model=Union[schema, Any],
+                           dependencies=[Depends(AuthService.get_auth_user_context)])
         self.add_api_route('/',
                            self.update,
                            methods=['PUT'],
-                           response_model=Union[schema, Any])
+                           response_model=Union[schema, Any],
+                           dependencies=[Depends(AuthService.get_auth_user_context)])
         self.add_api_route('/',
                            self.delete,
                            methods=['DELETE'],
-                           response_model=Union[schema, Any, Dict[str, str]])
+                           response_model=Union[schema, Any, Dict[str, str]],
+                           dependencies=[Depends(AuthService.get_auth_user_context)])
         # self.add_api_route('/caminho',
         #                    self.metodo_novo,
         #                    methods=['GET'],
@@ -155,19 +162,23 @@ class PaymentApi(CrudApi):
                            self.get,
                            methods=['GET'],
                            response_model=Union[List[schema],
-                                                schema, Any])
+                                                schema, Any],
+                           dependencies=[Depends(AuthService.get_auth_user_context)])
         self.add_api_route('/',
                            self.insert,
                            methods=['POST'],
-                           response_model=Union[schema, Any])
+                           response_model=Union[schema, Any],
+                           dependencies=[Depends(AuthService.get_auth_user_context)])
         self.add_api_route('/',
                            self.update,
                            methods=['PUT'],
-                           response_model=Union[schema, Any])
+                           response_model=Union[schema, Any],
+                           dependencies=[Depends(AuthService.get_auth_user_context)])
         self.add_api_route('/',
                            self.delete,
                            methods=['DELETE'],
-                           response_model=Union[schema, Any, Dict[str, str]])
+                           response_model=Union[schema, Any, Dict[str, str]],
+                           dependencies=[Depends(AuthService.get_auth_user_context)])
 
         self.service = PaymentService(model, schema)
 
@@ -202,19 +213,23 @@ class SaleApi(CrudApi):
                            self.get,
                            methods=['GET'],
                            response_model=Union[List[schema],
-                                                schema, Any])
+                                                schema, Any],
+                           dependencies=[Depends(AuthService.get_auth_user_context)])
         self.add_api_route('/',
                            self.insert,
                            methods=['POST'],
-                           response_model=Union[schema, Any])
+                           response_model=Union[schema, Any],
+                           dependencies=[Depends(AuthService.get_auth_user_context)])
         self.add_api_route('/',
                            self.update,
                            methods=['PUT'],
-                           response_model=Union[schema, Any])
+                           response_model=Union[schema, Any],
+                           dependencies=[Depends(AuthService.get_auth_user_context)])
         self.add_api_route('/',
                            self.delete,
                            methods=['DELETE'],
-                           response_model=Union[schema, Any, Dict[str, str]])
+                           response_model=Union[schema, Any, Dict[str, str]],
+                           dependencies=[Depends(AuthService.get_auth_user_context)])
 
         self.service = SaleService(model, schema)
 
@@ -253,19 +268,23 @@ class AddressApi(CrudApi):
                            self.get,
                            methods=['GET'],
                            response_model=Union[List[schema],
-                                                schema, Any])
+                                                schema, Any],
+                           dependencies=[Depends(AuthService.get_auth_user_context)])
         self.add_api_route('/',
                            self.insert,
                            methods=['POST'],
-                           response_model=Union[schema, Any])
+                           response_model=Union[schema, Any],
+                           dependencies=[Depends(AuthService.get_auth_user_context)])
         self.add_api_route('/',
                            self.update,
                            methods=['PUT'],
-                           response_model=Union[schema, Any])
+                           response_model=Union[schema, Any],
+                           dependencies=[Depends(AuthService.get_auth_user_context)])
         self.add_api_route('/',
                            self.delete,
                            methods=['DELETE'],
-                           response_model=Union[schema, Any, Dict[str, str]])
+                           response_model=Union[schema, Any, Dict[str, str]],
+                           dependencies=[Depends(AuthService.get_auth_user_context)])
 
         self.service = AddressService(model, schema)
 

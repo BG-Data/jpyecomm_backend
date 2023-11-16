@@ -16,6 +16,8 @@ logger.add(sys.stderr, colorize=True,
            format="<yellow>{time}</yellow> {level} <green>{message}</green>",
            filter="Auth", level="INFO")
 
+config = Config()
+
 
 class AuthService(DatabaseSessions, PasswordService):
     oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth")
@@ -57,12 +59,12 @@ class AuthService(DatabaseSessions, PasswordService):
         user_query = self.__db_check_user(username, password, session)
         # Adiciona contexto para os dados do usuário (dados que podem ser úteis para front)
         user_context = self.__user_context(user_query)
-        expire = datetime.utcnow() + Config.JWT_ACCESS_TOKEN_EXPIRES
+        expire = datetime.utcnow() + config.JWT_ACCESS_TOKEN_EXPIRES
         # Gerar token codificado
         encoded_jwt = jwt.encode(
             claims={'sub': username, 'exp': expire, 'context': user_context},
-            key=Config.SECRET_KEY,
-            algorithm=Config.ALGORITHM
+            key=config.SECRET_KEY,
+            algorithm=config.ALGORITHM
         )
         # retorno do jwt
         return {'access_token': encoded_jwt,
@@ -73,7 +75,7 @@ class AuthService(DatabaseSessions, PasswordService):
     def get_auth_user_context(token: Annotated[str, Depends(oauth2_scheme)]):
         # Retorna o contexto do usuário
         try:
-            payload = jwt.decode(token, Config.SECRET_KEY, algorithms=[Config.ALGORITHM])
+            payload = jwt.decode(token, config.SECRET_KEY, algorithms=[config.ALGORITHM])
             return payload.get('context')
         except JWTError as exc:
             raise HTTPException(
@@ -108,5 +110,5 @@ class AuthApi:
         return responses.JSONResponse({
             "datetime": datetime.utcnow().strftime("%Y/%m/%d %H:%M:%S"),
             "status": "ok",
-            'user': user_context['name']
+            'user_context': user_context
         }, 200)

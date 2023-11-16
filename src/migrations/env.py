@@ -11,7 +11,7 @@ from structure.connectors import Base
 config = context.config
 config.set_section_option(
     config.config_ini_section, "sqlalchemy.url",
-    Config.SQLALCHEMY_DATABASE_URI
+    Config.DATABASE_URL
 )
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

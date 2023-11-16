@@ -9,6 +9,8 @@ from structure.connectors import Session, SessionLocal
 from typing import List
 from settings import Config
 
+config = Config()
+
 logger.add(sys.stderr, colorize=True,
            format="<yellow>{time}</yellow> {level} <green>{message}</green>",
            filter="BaseUser", level="INFO")
@@ -25,7 +27,7 @@ class BaseUsers(PasswordService, CrudService):
             to_create = []
             dev = UserInsert(email='dev@ecomm.com',
                              name='dev',
-                             password=self.hash_password(Config.DEV_PSWD),
+                             password=self.hash_password(config.DEV_PSWD),
                              birthdate=date.today(),
                              lgpd=True,
                              document='',
@@ -54,6 +56,7 @@ class BaseUsers(PasswordService, CrudService):
     def create_base_users(self) -> dict:
         try:
             with SessionLocal() as session:
+
                 created = 0
                 for itens in self.__check_base_users(session):
                     if itens.get('insert') is True:
@@ -61,8 +64,6 @@ class BaseUsers(PasswordService, CrudService):
                                                         session)
                         logger.info(f'user created: {user_created}')
                         created += 1
-                    else:
-                        continue
                 return {'Users created': created}
         except Exception as exp:
             logger.error(f'Error at create_base_users {exp}')
