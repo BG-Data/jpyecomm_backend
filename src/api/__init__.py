@@ -1,4 +1,4 @@
-from common.generic import CrudApi, Depends
+from common.generic import CrudApi
 from common import PasswordService
 from loguru import logger
 import sys
@@ -12,23 +12,14 @@ from structure.schemas import UserSchema, UserInsert, UserUpdate, \
     AddressInsert, AddressUpdate, SaleSchema, SaleUpdate, \
     SaleInsert, PaymentSchema, PaymentUpdate, PaymentInsert
 from typing import Any, Union, List, Dict
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, Depends
 from structure import MakeOptionalPydantic
+from utils.exceptions import BadRequestException, UnauthorizedException, ForbiddenException, NotFoundException
 
 
 logger.add(sys.stderr, colorize=True,
            format="<yellow>{time}</yellow> {level} <green>{message}</green>",
            filter="Api", level="INFO")
-
-class UserNotFoundException(HTTPException):
-    def __init__(self):
-        detail = "O usuário não encontrado."
-        super().__init(status_code=status.HTTP_404_NOT_FOUND, detail=detail)
-
-class UnauthorizedUserException(HTTPException):
-    def __init__(self):
-        detail = "Usuário não é vendedor nem administrador."
-        super().__init(status_code=status.HTTP_401_UNAUTHORIZED, detail=detail)
 
 class UserApi(CrudApi):
     def __init__(self,
@@ -134,14 +125,14 @@ class ProductApi(CrudApi):
     def insert(self,
                insert_schema: ProductInsert,
                session: Session = Depends(get_session)):
-        # TODO (André) -> Criar HttpException para o caso do usuário não existir ou não for vendedor ou admin 
     
         user = self.get_user_by_id(insert_schema.user_id)
-        if user is None:
-            raise UserNotFoundException()
 
-        if not (user.is_vendor or user.is_admin):
-            raise UnauthorizedUserException()
+        if user is None:
+            raise UnauthorizedException(detail="Usuário não encontrado")
+        
+        if not (user == "vendedor" or user == "admin"):
+            raise ForbiddenException(detail="Usuário não tem permissão para inserir produtos")
         
         try:
             return self.crud.insert_item(insert_schema, session)
@@ -153,7 +144,15 @@ class ProductApi(CrudApi):
                id: int,
                update_schema: MakeOptionalPydantic.make_partial_model(ProductUpdate),
                session: Session = Depends(get_session)):
-        # TODO (André) -> Criar HttpException para o caso do usuário não existir ou não for vendendor ou admin 
+        
+        user = self.get_user_by_id(update_schema.user_id)
+
+        if user is None:
+            raise NotFoundException(detail="Usuário não encontrado. Impossível atualizar informações de produtos")
+        
+        if not (user == "vendedor" or user == "admin"): 
+            raise ForbiddenException("Usuário não tem permissão para atualizar informações de produtos")
+        
         try:
             return self.crud.update_item(id, update_schema, session)
         except Exception as exp:
@@ -239,7 +238,35 @@ class SaleApi(CrudApi):
     def insert(self,
                insert_schema: SaleInsert,
                session: Session = Depends(get_session)):
-        # TODO (André) -> Criar HttpException para o caso do usuário/produto/endereço/pagamento, etc não existir ou não for vendendor ou admin 
+        # TODO (André) -> Criar HttpException para o caso do usuário/produto/endereço/pagamento, etc não existir ou não for vendendor ou admin
+        user = self.get_user_by_id(insert_schema.user_id)
+
+        if user is None:
+            raise NotFoundException()
+        if not (user == "vendedor" or user == "admin"):
+            raise ForbiddenException()
+
+        # Verifica se o produto existe e tem permissão (exemplo)
+        product = self.get_product_by_id(insert_schema.product_id)
+
+        if product is None:
+            raise NotFoundException(detail="Produto não encontrado")
+
+        # TODO Verificar outras condições de permissão (endereço, pagamento, etc.)
+        delivery_adress = self.get_delivery_adress_id(insert_schema.delivery_address_id)
+
+        if delivery_adress is None:
+            raise NotFoundException(detail="Endereço de entrega não encontrado")
+        
+        billing_adress = self.get_billing_adress_id(insert_schema.billing_address_id)
+
+        if billing_adress is None:
+            raise NotFoundException(detail="Endereço de cobrança não encontrado")
+        
+        payment_method = self.get_payment_method_id(insert_schema.payment_method_id)
+
+        if payment_method is None:
+            raise 
 
         try:
             return self.crud.insert_item(insert_schema, session)
@@ -250,7 +277,29 @@ class SaleApi(CrudApi):
                id: int,
                update_schema: MakeOptionalPydantic.make_partial_model(SaleUpdate),
                session: Session = Depends(get_session)):
-        # TODO (André) -> Criar HttpException para o caso do usuário/produto/endereço/pagamento, etc não existir ou não for vendendor ou admin 
+        # TODO (André) -> Criar HttpException para o caso do usuário/produto/endereço/pagamento, etc não existir ou não for vendendor ou admin
+
+        user = self.get_user_by_id(update_schema.user_id)
+
+        if user is None:
+            raise NotFoundException()
+        if not (user == "vendedor" or user == "admin"):
+            raise ForbiddenException()
+
+        product = self.get_product_by_id(update_schema.product_id)
+
+        if product is None:
+            raise NotFoundException(detail="Produto não encontrado")
+
+        delivery_adress = self.delivery_adress_id(update_schema.delivery_address_id)
+
+        if delivery_adress is None:
+            raise NotFoundException(detail="Endereço de entrega não encontrado")
+        
+        billing_adress = self.billing_adress_id(update_schema.billing_address_id)
+
+        if billing_adress is None:
+            raise NotFoundException(detail="Endereço de cobrança não encontrado")
 
         try:
             return self.crud.update_item(id, update_schema, session)
