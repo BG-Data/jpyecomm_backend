@@ -28,6 +28,8 @@ class Config:
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=config('JWT_ACCESS_TOKEN_EXPIRES', default=1, cast=int))
     RELOAD = config('RELOAD', default=True, cast=bool)
     
+config = Config()
+
     # def __init__(self):
     #     if self.INFISICAL_TOKEN and self.ENVIRONMENT != 'test':
     #         self.get_credentials()

@@ -1,10 +1,9 @@
 import uvicorn
 from routes import init_app
-from settings import Config
+from settings import config
 
-config = Config()
+app, Base = init_app()
 
-app = init_app()
 app_base_configs = {
     "host": "0.0.0.0",
     "port": config.PORT,

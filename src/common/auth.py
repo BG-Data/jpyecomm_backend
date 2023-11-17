@@ -8,15 +8,13 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.security import OAuth2PasswordBearer
 from loguru import logger
 from common import PasswordService, DatabaseSessions
-from settings import Config
+from settings import config
 import sys
 from jose import JWTError, jwt
 
 logger.add(sys.stderr, colorize=True,
            format="<yellow>{time}</yellow> {level} <green>{message}</green>",
            filter="Auth", level="INFO")
-
-config = Config()
 
 
 class AuthService(DatabaseSessions, PasswordService):

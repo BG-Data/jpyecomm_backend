@@ -1,8 +1,6 @@
 from sqlalchemy.orm import Session
 import cryptocode
-from settings import Config
-
-config = Config()
+from settings import config
 
 
 class DatabaseSessions:

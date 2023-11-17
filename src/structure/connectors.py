@@ -1,10 +1,10 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
-from settings import Config
+from settings import config
 
 # remove connect_args if using any other db than sqlite
-engine = create_engine(url=Config.DATABASE_URL)
+engine = create_engine(url=config.DATABASE_URL)
 # connect_args={"check_same_thread": Config.SQLALCHEMY_TRACK_MODIFICATIONS}
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

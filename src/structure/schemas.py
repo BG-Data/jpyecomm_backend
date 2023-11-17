@@ -2,7 +2,7 @@ from pydantic import BaseModel, ConfigDict
 from datetime import date, datetime
 from typing import Optional, Union, List
 from decimal import Decimal
-from settings import Config
+from settings import config
 # Usuários
 from utils.enums import UserType
 
@@ -22,7 +22,7 @@ class PydanticModel(BaseModel):
 class Health(PydanticModel):
     datetime: str = datetime.utcnow().strftime("%d-%m-%Y %H:%M:%S")
     status: str = 'ok'
-    environment: str = Config.ENVIRONMENT
+    environment: str = config.ENVIRONMENT
 
 
 class UserBase(PydanticModel):

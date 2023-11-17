@@ -1,7 +1,6 @@
 import mercadopago
-from settings import Config
+from settings import config
 from utils.typos import Aliases
-config = Config()
 
 
 class MercadoCheckout:

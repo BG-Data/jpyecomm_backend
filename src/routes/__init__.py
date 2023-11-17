@@ -57,7 +57,7 @@ def init_app():
     Base.metadata.create_all(bind=engine)
     base_users = BaseUsers().create_base_users()
     logger.info(base_users)
-    return app
+    return app, Base
 
 
 def init_routes(app: FastAPI, api_routes: dict):
