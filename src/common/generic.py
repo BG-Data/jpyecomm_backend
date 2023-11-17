@@ -6,7 +6,7 @@ from typing import Any, Union, List
 from common import DatabaseSessions
 from loguru import logger
 import sys
-from fastapi import APIRouter, HTTPException, Depends, Request, status
+from fastapi import APIRouter, HTTPException, Depends, Request, status, Response
 from datetime import date, datetime
 from utils import ModelUtils
 
@@ -130,7 +130,8 @@ class CrudApi(APIRouter):
             session: Session = Depends(get_session)):
         try:
             params = get_schema.query_params._dict
-            return self.crud.get_itens(params, session)
+            result = self.crud.get_itens(params, session)
+            return result
         except Exception as exp:
             logger.error(f'Error at >>>>> get_item {exp}')
             raise HTTPException(status_code=400, detail=str(exp))

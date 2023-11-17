@@ -32,14 +32,14 @@ COPY --chown=$USER:$USER . .
 RUN pip install --no-cache -U poetry
 
 # Install pip separately
-RUN poetry run python -m pip install -U pip
+# RUN poetry run python -m pip install -U pip
 
 # Set up the project and install dependencies
 RUN poetry config virtualenvs.create true \
     && poetry config virtualenvs.in-project true \
     && poetry config virtualenvs.path .venv \
     && poetry install \
-    && poetry run python -m pip install -U pip setuptools \
+  #  && poetry run python -m pip install -U pip setuptools \
     && poetry lock
 
 

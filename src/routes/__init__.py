@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from api import UserApi, ProductApi, SaleApi, AddressApi, PaymentApi,ProductFileApi
+from api import UserApi, ProductApi, SaleApi, AddressApi, PaymentApi, ProductFileApi
 from structure.schemas import Health
 from common.auth import AuthApi, AuthService
 from common.base_users import BaseUsers
@@ -35,7 +35,7 @@ def init_app():
                         'tags': ['Produtos'],
                         'prefix': '/products'},
                   'product_file':
-                    {'router': ProductApi(),
+                    {'router': ProductFileApi(),
                         'tags': ['Produtos e Arquivos'],
                         'prefix': '/products/files'},
                   'sale':

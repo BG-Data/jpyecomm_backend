@@ -1,10 +1,11 @@
 from common.generic import CrudApi, Depends
 from common import PasswordService
 from loguru import logger
+import io
 import sys
 from structure.connectors import Session, get_session
 from app import UserService, ProductService, AddressService, \
-    SaleService, PaymentService
+    SaleService, PaymentService, ProductFileService
 from structure.models import UserModel, ProductModel, AddressModel, \
     SaleModel, PaymentMethodModel, ProductFilesModel
 from structure.schemas import UserSchema, UserInsert, UserUpdate, \
@@ -12,7 +13,8 @@ from structure.schemas import UserSchema, UserInsert, UserUpdate, \
     AddressInsert, AddressUpdate, SaleSchema, SaleUpdate, \
     SaleInsert, PaymentSchema, PaymentUpdate, PaymentInsert, ProductFileInsert, ProductFileSchema, ProductFileUpdate
 from typing import Any, Union, List, Dict
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, UploadFile, Request
+from fastapi.responses import StreamingResponse, JSONResponse
 from structure import MakeOptionalPydantic
 from common.auth import AuthService
 
@@ -93,14 +95,15 @@ class ProductFileApi(CrudApi):
         super().__init__(model, schema, insert_schema, update_schema,
                          *args, **kwargs)
         self.add_api_route('/',
-                           self.get,
+                           self.get_files,
                            methods=['GET'],
                            response_model=Union[List[schema],
                                                 schema, Any])
         self.add_api_route('/',
                            self.insert,
                            methods=['POST'],
-                           response_model=Union[schema, Any],
+                           response_model=Union[List[schema],
+                                                schema, Any],
                            dependencies=[Depends(AuthService.get_auth_user_context)])
         self.add_api_route('/',
                            self.update,
@@ -113,20 +116,45 @@ class ProductFileApi(CrudApi):
                            response_model=Union[schema, Any, Dict[str, str]],
                            dependencies=[Depends(AuthService.get_auth_user_context)])
 
-        self.service = ProductService(model, schema)
+        self.service = ProductFileService(model, schema)
 
-    def insert(self,
-               insert_schema: ProductInsert,
-               session: Session = Depends(get_session)):
+    async def get_files(self, id: int = None,
+                  limit: int = 5,
+                  offset: int = 0,
+                  get_schema: Request = None,
+                  session: Session = Depends(get_session)):
+        try:
+            results = super().get(id, limit, offset, get_schema, session)
+            files = [await StreamingResponse(content=io.BytesIO(result.file),
+                                       media_type=result.content_type).render() for result in results]
+            file_details = [result.model_dump(exclude={'file'}) for result in results]
+            return files
+        except Exception as exp:
+            logger.error(f'error at get {self.__class__.__name__} {exp}')
+            raise HTTPException(detail=f'Error at get_files {exp}',
+                                status_code=400)
+
+
+    async def insert(self,
+                     files: List[UploadFile],
+                     product_id: int,
+                     session: Session = Depends(get_session)):
         # TODO (André) -> Criar HttpException para o caso do usuário não existir ou não for vendendor ou admin 
         try:
-            return self.crud.insert_item(insert_schema, session)
+            inserted_files = []
+            for insertion in files:
+                insert_schema = self.insert_schema(product_id=product_id,
+                                                   file=await insertion.read(),
+                                                   filename=insertion.filename,
+                                                   content_type=insertion.content_type)
+                inserted_files.append(self.crud.insert_item(insert_schema, session).model_dump(exclude={'file'}))
+                return inserted_files
         except Exception as exp:
             logger.error(f'error at insert {self.__class__.__name__} {exp}')
     
     def update(self,
                id: int,
-               update_schema: MakeOptionalPydantic.make_partial_model(ProductUpdate),
+               update_schema: MakeOptionalPydantic.make_partial_model(ProductFileUpdate),
                session: Session = Depends(get_session)):
         # TODO (André) -> Criar HttpException para o caso do usuário não existir ou não for vendendor ou admin 
         try:

@@ -102,6 +102,7 @@ class ProductFilesModel(DefaultModel):
                         nullable=False)
     filename = Column(String(255), nullable=False)
     file = Column(BLOB, nullable=False)
+    content_type = Column(String(100), nullable=False)
 
     product = relationship('ProductModel', back_populates='files')
 

@@ -2,6 +2,7 @@ import uvicorn
 from routes import init_app
 from settings import config
 
+
 app, Base = init_app()
 
 app_base_configs = {
