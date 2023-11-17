@@ -10,4 +10,4 @@ services:
       dockerfile: ./Dockerfile
     image: "ecommerce"
     ports:
-      - "5001:5000"
+      - "5000:5000"
