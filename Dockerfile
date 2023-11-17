@@ -2,7 +2,7 @@ FROM python:3.10
 
 ENV  POETRY_VIRTUALENVS_IN_PROJECT=true \
   POETRY_HOME="/home/poetry" \
-  VENV_PATH="/home/ecomm/.venv" \
+  VENV_PATH="/home/ecomm .venv" \
   USER="ecomm"
 
 ENV  PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"

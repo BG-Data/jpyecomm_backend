@@ -25,6 +25,14 @@ class ProductService:
         self.base_schema = schema
 
 
+class ProductFileService:
+    def __init__(self,
+                 model: Base,
+                 schema: BaseModel):
+        self.model = model
+        self.base_schema = schema
+
+
 class PaymentService:
     def __init__(self,
                  model: Base,

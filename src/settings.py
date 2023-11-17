@@ -3,7 +3,7 @@ import os
 from decouple import config
 from datetime import timedelta
 basedir = os.path.abspath(os.path.dirname(__file__))
-from common.secrets import InfisicalClient 
+#from common.secrets import InfisicalClient 
 from loguru import logger
 import sys
 

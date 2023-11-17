@@ -1,6 +1,7 @@
 from structure.connectors import Base
 from sqlalchemy import String, Date, DateTime, Integer, \
-      Numeric, Column, Boolean, Float, ForeignKey, DateTime, LargeBinary, func
+      Numeric, Column, Boolean, Float, ForeignKey, \
+        DateTime, BLOB, func
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
@@ -100,7 +101,7 @@ class ProductFilesModel(DefaultModel):
     product_id = Column(Integer, ForeignKey('products.id'),
                         nullable=False)
     filename = Column(String(255), nullable=False)
-    file: Column(LargeBinary, nullable=False)
+    file = Column(BLOB, nullable=False)
 
     product = relationship('ProductModel', back_populates='files')
 
