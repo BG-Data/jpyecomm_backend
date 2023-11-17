@@ -7,9 +7,8 @@ from loguru import logger
 import sys
 from structure.connectors import Session, SessionLocal
 from typing import List
-from settings import Config
+from settings import config
 
-config = Config()
 
 logger.add(sys.stderr, colorize=True,
            format="<yellow>{time}</yellow> {level} <green>{message}</green>",
