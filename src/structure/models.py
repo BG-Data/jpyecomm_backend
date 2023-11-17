@@ -1,6 +1,6 @@
 from structure.connectors import Base
 from sqlalchemy import String, Date, DateTime, Integer, \
-      Numeric, Column, Boolean, Float, ForeignKey, DateTime, func
+      Numeric, Column, Boolean, Float, ForeignKey, DateTime, LargeBinary, func
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
@@ -83,7 +83,6 @@ class ProductModel(DefaultModel):
     infos = Column(String(255))
     category = Column(Boolean, nullable=False)
     details = Column(String(255))
-    url = Column(String(255))
     personalized_name = Column(String(255))
     personalized_type = Column(String(255), nullable=True)
 
@@ -92,6 +91,18 @@ class ProductModel(DefaultModel):
 
     user = relationship('UserModel', back_populates='products')
     product_sale = relationship('SaleModel', back_populates='sale_product')
+    files = relationship('ProductFilesModel', back_populates='product')
+
+
+class ProductFilesModel(DefaultModel):
+    __tablename__ = 'product_files'
+    id = Column(Integer, primary_key=True)
+    product_id = Column(Integer, ForeignKey('products.id'),
+                        nullable=False)
+    filename = Column(String(255), nullable=False)
+    file: Column(LargeBinary, nullable=False)
+
+    product = relationship('ProductModel', back_populates='files')
 
 
 class AddressModel(DefaultModel):

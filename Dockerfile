@@ -29,11 +29,16 @@ ENV LC_ALL en_US.UTF-8
 COPY . ./
 COPY --chown=$USER:$USER . .
 
-RUN pip install --no-cache -U pip poetry\
-    && poetry config virtualenvs.create true \
+RUN pip install --no-cache -U poetry
+
+# Install pip separately
+RUN poetry run python -m pip install -U pip
+
+# Set up the project and install dependencies
+RUN poetry config virtualenvs.create true \
     && poetry config virtualenvs.in-project true \
     && poetry config virtualenvs.path .venv \
-    && poetry install\
+    && poetry install \
     && poetry run python -m pip install -U pip setuptools \
     && poetry lock
 
