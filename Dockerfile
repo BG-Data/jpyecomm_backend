@@ -32,6 +32,7 @@ COPY --chown=$USER:$USER . .
 RUN pip install --no-cache -U pip poetry\
     && poetry config virtualenvs.create true \
     && poetry config virtualenvs.in-project true \
+    && poetry config virtualenvs.path .venv \
     && poetry install \
     && poetry run python -m ensurepip --default-pip \
     && poetry run python -m pip install -U pip setuptools \
