@@ -14,7 +14,8 @@ from structure.schemas import UserSchema, UserInsert, UserUpdate, \
     SaleInsert, PaymentSchema, PaymentUpdate, PaymentInsert, ProductFileInsert, ProductFileSchema, ProductFileUpdate
 from typing import Any, Union, List, Dict
 from fastapi import HTTPException, status, UploadFile, Request
-from fastapi.responses import StreamingResponse, JSONResponse
+from fastapi.responses import StreamingResponse, JSONResponse, Response
+from fastapi.encoders import jsonable_encoder
 from structure import MakeOptionalPydantic
 from common.auth import AuthService
 
@@ -99,6 +100,12 @@ class ProductFileApi(CrudApi):
                            methods=['GET'],
                            response_model=Union[List[schema],
                                                 schema, Any])
+        self.add_api_route('/names',
+                           self.get,
+                           methods=['GET'],
+                           response_model=Union[List[schema],
+                                                schema, Any])
+        
         self.add_api_route('/',
                            self.insert,
                            methods=['POST'],
@@ -118,22 +125,40 @@ class ProductFileApi(CrudApi):
 
         self.service = ProductFileService(model, schema)
 
-    async def get_files(self, id: int = None,
-                  limit: int = 5,
-                  offset: int = 0,
-                  get_schema: Request = None,
-                  session: Session = Depends(get_session)):
+    def get(self, id: int = None,
+            limit: int = 5,
+            offset: int = 0,
+            get_schema: Request = None,
+            session: Session = Depends(get_session)):
         try:
             results = super().get(id, limit, offset, get_schema, session)
-            files = [await StreamingResponse(content=io.BytesIO(result.file),
-                                       media_type=result.content_type).render() for result in results]
-            file_details = [result.model_dump(exclude={'file'}) for result in results]
-            return files
+            if results == []:
+                return Response(content="No file found",
+                                status_code=200)
+            return [result.model_dump(exclude={"file"}) for result in results]
+                
+        except Exception as exp:
+            logger.error(f'error at get {self.__class__.__name__} {exp}')
+            raise HTTPException(detail=f'Error at get_filename {exp}',
+                                status_code=400)
+
+    async def get_files(self, id: int = None,
+                        limit: int = 5,
+                        offset: int = 0,
+                        get_schema: Request = None,
+                        session: Session = Depends(get_session)):
+        try:
+            results = super().get(id, limit, offset, get_schema, session)
+            if results == []:
+                return Response(content="No file found",
+                                status_code=200)
+            for result in results:
+                return StreamingResponse(content=io.BytesIO(result.file),
+                                         media_type=result.content_type)
         except Exception as exp:
             logger.error(f'error at get {self.__class__.__name__} {exp}')
             raise HTTPException(detail=f'Error at get_files {exp}',
                                 status_code=400)
-
 
     async def insert(self,
                      files: List[UploadFile],
