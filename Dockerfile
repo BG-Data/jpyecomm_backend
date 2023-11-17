@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.10
 
 ENV  POETRY_VIRTUALENVS_IN_PROJECT=true \
   POETRY_HOME="/home/poetry" \
@@ -33,8 +33,7 @@ RUN pip install --no-cache -U pip poetry\
     && poetry config virtualenvs.create true \
     && poetry config virtualenvs.in-project true \
     && poetry config virtualenvs.path .venv \
-    && poetry install \
-    && poetry run python -m ensurepip --default-pip \
+    && poetry install\
     && poetry run python -m pip install -U pip setuptools \
     && poetry lock
 
