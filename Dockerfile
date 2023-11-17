@@ -34,7 +34,8 @@ RUN pip install --no-cache -U pip poetry\
     && poetry config virtualenvs.in-project true \
     && poetry install \
     && poetry run python -m ensurepip --default-pip \
-    && poetry run python -m pip install -U pip setuptools
+    && poetry run python -m pip install -U pip setuptools \
+    && poetry lock
 
 
 
