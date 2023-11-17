@@ -2,6 +2,7 @@ from pydantic import BaseModel, ConfigDict
 from datetime import date, datetime
 from typing import Optional, Union, List
 from decimal import Decimal
+from fastapi import UploadFile
 from settings import config
 # Usuários
 from utils.enums import UserType
@@ -94,6 +95,7 @@ class ProductUpdate(ProductInsert):
 
 class ProductFileBase(PydanticModel):
     filename: str
+    content_type: str
     file: bytes
 
 
@@ -104,6 +106,7 @@ class ProductFileSchema(ProductFileBase):
 
 class ProductFileInsert(ProductFileBase):
     product_id: int
+    file: Optional[bytes]
 
 
 class ProductFileUpdate(ProductFileInsert):
