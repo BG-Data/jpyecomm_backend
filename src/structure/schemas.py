@@ -69,12 +69,12 @@ class ProductBase(PydanticModel):
 
 class ProductSchema(ProductBase):
     id: int
+    user_id: int
     created_at: datetime
     updated_at: datetime
     infos: str
     category: bool
     details: str
-    url: str
     personalized_name: str
     personalized_type: str
 
@@ -84,7 +84,6 @@ class ProductInsert(ProductBase):
     user_id: int
     category: bool
     details: str
-    url: str
     personalized_name: str
     personalized_type: str
 
@@ -92,6 +91,23 @@ class ProductInsert(ProductBase):
 class ProductUpdate(ProductInsert):
     pass
 
+
+class ProductFileBase(PydanticModel):
+    filename: str
+    file: bytes
+
+
+class ProductFileSchema(ProductFileBase):
+    id: int
+    product_id: int
+
+
+class ProductFileInsert(ProductFileBase):
+    product_id: int
+
+
+class ProductFileUpdate(ProductFileInsert):
+    pass
 
 # Address
 

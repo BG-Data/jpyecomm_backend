@@ -6,11 +6,11 @@ from structure.connectors import Session, get_session
 from app import UserService, ProductService, AddressService, \
     SaleService, PaymentService
 from structure.models import UserModel, ProductModel, AddressModel, \
-    SaleModel, PaymentMethodModel
+    SaleModel, PaymentMethodModel, ProductFilesModel
 from structure.schemas import UserSchema, UserInsert, UserUpdate, \
     ProductSchema, ProductInsert, ProductUpdate, AddressSchema, \
     AddressInsert, AddressUpdate, SaleSchema, SaleUpdate, \
-    SaleInsert, PaymentSchema, PaymentUpdate, PaymentInsert
+    SaleInsert, PaymentSchema, PaymentUpdate, PaymentInsert, ProductFileInsert, ProductFileSchema, ProductFileUpdate
 from typing import Any, Union, List, Dict
 from fastapi import HTTPException, status
 from structure import MakeOptionalPydantic
@@ -83,6 +83,58 @@ class UserApi(CrudApi):
             logger.error(f'error at update {self.__class__.__name__} {exp}')
 
 
+class ProductFileApi(CrudApi):
+    def __init__(self,
+                 model: ProductFilesModel = ProductFilesModel,
+                 schema: ProductFileSchema = ProductFileSchema,
+                 insert_schema: ProductFileInsert = ProductFileInsert,
+                 update_schema: ProductFileUpdate = MakeOptionalPydantic.make_partial_model(ProductFileUpdate),
+                 *args, **kwargs):
+        super().__init__(model, schema, insert_schema, update_schema,
+                         *args, **kwargs)
+        self.add_api_route('/',
+                           self.get,
+                           methods=['GET'],
+                           response_model=Union[List[schema],
+                                                schema, Any])
+        self.add_api_route('/',
+                           self.insert,
+                           methods=['POST'],
+                           response_model=Union[schema, Any],
+                           dependencies=[Depends(AuthService.get_auth_user_context)])
+        self.add_api_route('/',
+                           self.update,
+                           methods=['PUT'],
+                           response_model=Union[schema, Any],
+                           dependencies=[Depends(AuthService.get_auth_user_context)])
+        self.add_api_route('/',
+                           self.delete,
+                           methods=['DELETE'],
+                           response_model=Union[schema, Any, Dict[str, str]],
+                           dependencies=[Depends(AuthService.get_auth_user_context)])
+
+        self.service = ProductService(model, schema)
+
+    def insert(self,
+               insert_schema: ProductInsert,
+               session: Session = Depends(get_session)):
+        # TODO (André) -> Criar HttpException para o caso do usuário não existir ou não for vendendor ou admin 
+        try:
+            return self.crud.insert_item(insert_schema, session)
+        except Exception as exp:
+            logger.error(f'error at insert {self.__class__.__name__} {exp}')
+    
+    def update(self,
+               id: int,
+               update_schema: MakeOptionalPydantic.make_partial_model(ProductUpdate),
+               session: Session = Depends(get_session)):
+        # TODO (André) -> Criar HttpException para o caso do usuário não existir ou não for vendendor ou admin 
+        try:
+            return self.crud.update_item(id, update_schema, session)
+        except Exception as exp:
+            logger.error(f'error at update {self.__class__.__name__} {exp}')
+
+
 class ProductApi(CrudApi):
     def __init__(self,
                  model: ProductModel = ProductModel,
@@ -112,22 +164,8 @@ class ProductApi(CrudApi):
                            methods=['DELETE'],
                            response_model=Union[schema, Any, Dict[str, str]],
                            dependencies=[Depends(AuthService.get_auth_user_context)])
-        # self.add_api_route('/caminho',
-        #                    self.metodo_novo,
-        #                    methods=['GET'],
-        #                    response_model=dict)
 
         self.service = ProductService(model, schema)
-
-    # def metodo_novo(self,
-    #                 id: int,
-    #                 session: Session = Depends(get_session)):
-    #     try:
-    #         resultado = session.query(ProductModel).all()
-    #     except ValueError as exp:
-    #         return f'Dado errado colocado aqui {exp}'
-    #     except Exception as exp:
-    #         logger.error(f" error do metodo novo: {exp}")
 
     def insert(self,
                insert_schema: ProductInsert,
