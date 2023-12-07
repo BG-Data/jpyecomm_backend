@@ -4,15 +4,6 @@ Repositório do PI2 para criar um ecommerce website rodando em JS + Python
 Exemplificação das operações Back-Front-Infra
 ![automated like clockwork](./images/Aplicação%20Básica%20-%20E-commerce.drawio.png) -->
 
-# TODO 
-
-- [] Adicionar lista de URLs das imagens e vídeos em produtos (Cloud storage)
-- [] Checkout mercado pago 
-- [] Montar payload de checkout 
-- [] Documentar rotas e construir contratos para Frontend
-- [] Ajustar DNS e Proxy pass (nginx)
-- [] Google Auth (+ Microsoft e + Facebook)
-- [] 
 
 # Estrutura da APP
 
