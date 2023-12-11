@@ -1,7 +1,7 @@
 from typing import Union
 import boto3
 from loguru import logger
-from os import path
+from common import ProgressPercentage
 from uuid import uuid4
 from botocore.exceptions import ClientError
 
@@ -52,7 +52,8 @@ class AwsClient:
         try:
             if public_file:
                 response = self.client.upload_file(file_name, bucket, object_name,
-                                                   ExtraArgs={'ACL': 'public-read'})
+                                                   ExtraArgs={'ACL': 'public-read'},
+                                                   Callback=ProgressPercentage(object_name.split('/')[-1]))
             else:
                 response = self.client.upload_file(file_name, bucket, object_name)
             logger.info(response)

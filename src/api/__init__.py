@@ -203,16 +203,19 @@ class ProductApi(CrudApi):
             get_schema: Request = None,
             session: Session = Depends(get_session)):
         try:
+            products = []
             results = super().get(id, limit, offset, get_schema, session)
             if results == []:
                 return Response(content="No product found",
                                 status_code=200)
+
             for result in results:
                 urls = self.service.get_product_urls(result.id, session)
-                result.url    
-            # TODO -> add product file urls at schema !
-            return [result.model_dump() for result in results]
-                
+                result.url = urls
+                products.append(result.model_dump())
+
+            return products
+
         except Exception as exp:
             logger.error(f'error at get {self.__class__.__name__} {exp}')
             raise HTTPException(status_code=500, detail=f'Error at get_product {exp}')
@@ -221,7 +224,8 @@ class ProductApi(CrudApi):
                insert_schema: ProductInsert,
                session: Session = Depends(get_session)):
         try:
-            return self.crud.insert_item(insert_schema, session)
+            result = self.crud.insert_item(insert_schema, session)
+            return result
         except Exception as exp:
             logger.error(f'error at insert {self.__class__.__name__} {exp}')
             raise HTTPException(status_code=500, detail=f'Error at get insert product {exp}')
