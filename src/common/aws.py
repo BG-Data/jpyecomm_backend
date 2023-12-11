@@ -4,12 +4,6 @@ from loguru import logger
 from os import path
 from uuid import uuid4
 from botocore.exceptions import ClientError
-AWS_ACCESS_KEY='AKIAQBL4DL32K5EXWIY7'
-AWS_SECRET_ACCESS_KEY='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'
-AWS_REGION='us-east-1'
-AWS_BUCKET_NAME='jpycomm-bucket'
-AWS_BUCKET_FOLDER='product-files'
-AWS_BUCKET_FOLDER_PATH='https://jpycomm-bucket.s3.amazonaws.com/product-files/'
 
 
 class AwsClient:
