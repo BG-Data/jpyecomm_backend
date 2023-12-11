@@ -65,7 +65,6 @@ class ProductBase(PydanticModel):
     unit_value: Decimal
     labor_time: Decimal
     obs: str
-    Optional[List[str]] = []
 
 
 class ProductSchema(ProductBase):
@@ -78,6 +77,7 @@ class ProductSchema(ProductBase):
     details: str
     personalized_name: str
     personalized_type: str
+    url = List[Optional[str]] = []
 
 
 class ProductInsert(ProductBase):
@@ -89,8 +89,13 @@ class ProductInsert(ProductBase):
     personalized_type: str
 
 
-class ProductUpdate(ProductInsert):
-    pass
+class ProductUpdate(ProductBase):
+    infos: str
+    user_id: int
+    category: bool
+    details: str
+    personalized_name: str
+    personalized_type: str
 
 
 class ProductFileBase(PydanticModel):
@@ -106,6 +111,10 @@ class ProductFileSchema(ProductFileBase):
 
 class ProductFileInsert(ProductFileBase):
     product_id: int
+    file: Optional[str]  # url
+
+
+class ProductFileUrls(PydanticModel):
     file: Optional[str]
 
 

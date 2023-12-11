@@ -4,8 +4,9 @@ import sys
 from common import DatabaseSessions, get_current_method_name
 from fastapi import HTTPException, Depends
 from structure.connectors import Base
-from sqlalchemy import or_
+from sqlalchemy import or_, delete
 from structure.models import ProductFilesModel
+from structure.schemas import ProductFileUrls
 from structure.connectors import Session, get_session
 
 
@@ -32,9 +33,9 @@ class ProductService(DatabaseSessions):
     def get_product_urls(self, product_id: int,
                          session: Session = Depends(get_session)):
         try:
-            result = session.query(ProductFilesModel)\
+            results = session.query(ProductFilesModel)\
                             .filter(ProductFilesModel.product_id == product_id)
-            return result
+            return [ProductFileUrls.model_validate(result.file) for result in results.all()]
         except Exception as exp:
             logger.error(f'Error at >>>>> get_product urls {exp}')
             raise HTTPException(status_code=500, detail=str(exp))
@@ -42,18 +43,22 @@ class ProductService(DatabaseSessions):
     def delete_product_urls(self, product_id: int = None,
                             session: Session = Depends(get_session)):
         try:
-            result = session.query(self.model)\
-                            .filter(self.model.product_id == product_id).one()
-            if result:
+            delete_statement = delete(ProductFilesModel)\
+                                .where(ProductFilesModel.product_id == product_id)
+            result = session.execute(delete_statement)
+            delete_count = result.rowcount
+            if delete_count == 0:
                 logger.error('No item was found to be deleted')
-                raise ValueError('Delete item not found')
-            self.delete_session(session, result)
-            logger.info('Row deleted')
-            logger.info(f'{result.__tablename__} tabled deleted row with id {product_id}')
+                return {'status': 'No urls to delete',
+                        "table":
+                            {"name": ProductFilesModel.__tablename__}
+                        }
+            logger.info(f'{delete_count} Row deleted')
+            logger.info(f'{ProductFilesModel.__tablename__} tabled deleted row with id {product_id}')
             return {'status': 'deleted',
                     "table":
-                        {"name": result.__tablename__,
-                         'id': result.id}
+                        {"name": ProductFilesModel.__tablename__,
+                         'product_id': product_id}
                     }
         except Exception as exp:
             logger.error(f'Error at >>>>> {get_current_method_name()}: {exp}')
