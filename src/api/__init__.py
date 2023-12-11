@@ -95,12 +95,8 @@ class ProductFileApi(CrudApi):
                  *args, **kwargs):
         super().__init__(model, schema, insert_schema, update_schema,
                          *args, **kwargs)
+
         self.add_api_route('/',
-                           self.get_files,
-                           methods=['GET'],
-                           response_model=Union[List[schema],
-                                                schema, Any])
-        self.add_api_route('/names',
                            self.get,
                            methods=['GET'],
                            response_model=Union[List[schema],
@@ -135,36 +131,16 @@ class ProductFileApi(CrudApi):
             if results == []:
                 return Response(content="No file found",
                                 status_code=200)
-            return [result.model_dump(exclude={"file"}) for result in results]
+            return [result.model_dump() for result in results]
                 
         except Exception as exp:
             logger.error(f'error at get {self.__class__.__name__} {exp}')
-            raise HTTPException(detail=f'Error at get_filename {exp}',
-                                status_code=400)
-
-    async def get_files(self, id: int = None,
-                        limit: int = 5,
-                        offset: int = 0,
-                        get_schema: Request = None,
-                        session: Session = Depends(get_session)):
-        try:
-            results = super().get(id, limit, offset, get_schema, session)
-            if results == []:
-                return Response(content="No file found",
-                                status_code=200)
-            for result in results:
-                return StreamingResponse(content=io.BytesIO(result.file),
-                                         media_type=result.content_type)
-        except Exception as exp:
-            logger.error(f'error at get {self.__class__.__name__} {exp}')
-            raise HTTPException(detail=f'Error at get_files {exp}',
-                                status_code=400)
+            raise HTTPException(status_code=500, detail=f'Error at get_filename {exp}')
 
     async def insert(self,
                      files: List[UploadFile],
                      product_id: int,
                      session: Session = Depends(get_session)):
-        # TODO (André) -> Criar HttpException para o caso do usuário não existir ou não for vendendor ou admin 
         try:
             inserted_files = []
             for insertion in files:
@@ -176,16 +152,17 @@ class ProductFileApi(CrudApi):
                 return inserted_files
         except Exception as exp:
             logger.error(f'error at insert {self.__class__.__name__} {exp}')
-    
+            raise HTTPException(status_code=500, detail=f'Error at get insert filename {exp}')
+
     def update(self,
                id: int,
                update_schema: MakeOptionalPydantic.make_partial_model(ProductFileUpdate),
                session: Session = Depends(get_session)):
-        # TODO (André) -> Criar HttpException para o caso do usuário não existir ou não for vendendor ou admin 
         try:
             return self.crud.update_item(id, update_schema, session)
         except Exception as exp:
             logger.error(f'error at update {self.__class__.__name__} {exp}')
+            raise HTTPException(status_code=500, detail=f'Error at get update filename {exp}')
 
 
 class ProductApi(CrudApi):
@@ -220,24 +197,59 @@ class ProductApi(CrudApi):
 
         self.service = ProductService(model, schema)
 
+    def get(self, id: int = None,
+            limit: int = 5,
+            offset: int = 0,
+            get_schema: Request = None,
+            session: Session = Depends(get_session)):
+        try:
+            results = super().get(id, limit, offset, get_schema, session)
+            if results == []:
+                return Response(content="No product found",
+                                status_code=200)
+            for result in results:
+                urls = self.service.get_product_urls(result.id, session)
+                result.url    
+            # TODO -> add product file urls at schema !
+            return [result.model_dump() for result in results]
+                
+        except Exception as exp:
+            logger.error(f'error at get {self.__class__.__name__} {exp}')
+            raise HTTPException(status_code=500, detail=f'Error at get_product {exp}')
+
     def insert(self,
                insert_schema: ProductInsert,
                session: Session = Depends(get_session)):
-        # TODO (André) -> Criar HttpException para o caso do usuário não existir ou não for vendendor ou admin 
         try:
             return self.crud.insert_item(insert_schema, session)
         except Exception as exp:
             logger.error(f'error at insert {self.__class__.__name__} {exp}')
-    
+            raise HTTPException(status_code=500, detail=f'Error at get insert product {exp}')
+
     def update(self,
                id: int,
                update_schema: MakeOptionalPydantic.make_partial_model(ProductUpdate),
                session: Session = Depends(get_session)):
-        # TODO (André) -> Criar HttpException para o caso do usuário não existir ou não for vendendor ou admin 
         try:
             return self.crud.update_item(id, update_schema, session)
         except Exception as exp:
             logger.error(f'error at update {self.__class__.__name__} {exp}')
+            raise HTTPException(status_code=500, detail=f'Error at get update product {exp}')
+
+    def delete(self, id: int = None,
+               session: Session = Depends(get_session)):
+        try:
+            url_deleted = self.service.delete_product_urls(id, session)
+            results = super().delete(id, session)
+            if results == []:
+                return Response(content="No product found to delete ",
+                                status_code=200)
+            return Response(content=[url_deleted, results],
+                            status_code=200)
+
+        except Exception as exp:
+            logger.error(f'error at get {self.__class__.__name__} {exp}')
+            raise HTTPException(status_code=500, detail=f'Error at get_product {exp}')
 
 
 class PaymentApi(CrudApi):
