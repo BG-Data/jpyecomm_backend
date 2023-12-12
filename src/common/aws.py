@@ -2,9 +2,8 @@ from typing import Union
 import boto3
 from loguru import logger
 from common import ProgressPercentage
-from uuid import uuid4
 from botocore.exceptions import ClientError
-
+from os import remove
 
 class AwsClient:
 
@@ -52,18 +51,20 @@ class AwsClient:
         try:
             if public_file:
                 response = self.client.upload_file(file_name, bucket, object_name,
-                                                   ExtraArgs={'ACL': 'public-read'},
-                                                   Callback=ProgressPercentage(object_name.split('/')[-1]))
+                                                   ExtraArgs={'ACL': 'public-read'})
             else:
                 response = self.client.upload_file(file_name, bucket, object_name)
             logger.info(response)
+
         except ClientError as e:
             logger.error(e)
             return {'status': False,
                     'file': file_name,
                     'url': object_name}
+        finally:
+            remove(file_name)
         return {'status': True,
-                'urls': object_name}
+                'url': f'https://{bucket}.s3.{self.region}.amazonaws.com/{object_name}'}
 
     def delete_file(self,
                     bucket: str,

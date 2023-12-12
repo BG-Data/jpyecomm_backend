@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 import cryptocode
-from settings import config
+from settings import cfg
 import inspect
 import os
 import sys
@@ -39,7 +39,7 @@ class DatabaseSessions:
         
 
 class PasswordService:
-    criptocode = config.CRIPTOCODE
+    criptocode = cfg.CRIPTOCODE
 
     # def set_password(self):
     #     pass

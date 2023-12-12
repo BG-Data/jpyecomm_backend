@@ -1,14 +1,17 @@
 from pydantic import BaseModel
 from loguru import logger
+from typing import List
 import sys
 from common import DatabaseSessions, get_current_method_name
-from fastapi import HTTPException, Depends
+from fastapi import HTTPException, Depends, UploadFile
 from structure.connectors import Base
 from sqlalchemy import or_, delete
+from time import sleep
 from structure.models import ProductFilesModel
 from structure.schemas import ProductFileUrls
 from structure.connectors import Session, get_session
-
+from settings import cfg
+from common.aws import AwsClient
 
 logger.add(sys.stderr, colorize=True,
            format="<yellow>{time}</yellow> {level} <green>{message}</green>",
@@ -31,11 +34,11 @@ class ProductService(DatabaseSessions):
         self.base_schema = schema
 
     def get_product_urls(self, product_id: int,
-                         session: Session = Depends(get_session)):
+                         session: Session = Depends(get_session)) -> List[ProductFileUrls]:
         try:
             results = session.query(ProductFilesModel)\
                             .filter(ProductFilesModel.product_id == product_id)
-            return [ProductFileUrls.model_validate(result.file) for result in results.all()]
+            return [result.file for result in results.all()]
         except Exception as exp:
             logger.error(f'Error at >>>>> get_product urls {exp}')
             raise HTTPException(status_code=500, detail=str(exp))
@@ -71,6 +74,31 @@ class ProductFileService:
                  schema: BaseModel):
         self.model = model
         self.base_schema = schema
+        self.aws_service: AwsClient = AwsClient('s3',
+                                                cfg.AWS_ACCESS_KEY,
+                                                cfg.AWS_SECRET_ACCESS_KEY,
+                                                cfg.AWS_REGION)
+
+    async def create_product_image_url(self,
+                                       insertion: UploadFile,
+                                       filename: str,
+                                       product_id: int) -> dict:
+        content = insertion.file.read()
+        with open(filename, 'wb') as f:
+            f.write(content)
+        result = self.aws_service.upload_file(filename,
+                                              cfg.AWS_BUCKET_NAME,
+                                              cfg.AWS_BUCKET_FOLDER + "/" + str(product_id) + "/" + filename)
+        if result.get('status') is False:
+            for j in range(3):
+                sleep((j+1)**2)
+                result = await self.create_product_image_url(insertion, filename, product_id)
+                if result.get('status') is True:
+                    break
+            else:
+                raise HTTPException(status_code=400, detail=f'Failed to create image URL: {result}')
+        else:
+            return result
 
 
 class PaymentService:

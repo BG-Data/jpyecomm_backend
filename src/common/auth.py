@@ -8,7 +8,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.security import OAuth2PasswordBearer
 from loguru import logger
 from common import PasswordService, DatabaseSessions
-from settings import config
+from settings import cfg
 import sys
 from jose import JWTError, jwt
 
@@ -57,12 +57,12 @@ class AuthService(DatabaseSessions, PasswordService):
         user_query = self.__db_check_user(username, password, session)
         # Adiciona contexto para os dados do usuário (dados que podem ser úteis para front)
         user_context = self.__user_context(user_query)
-        expire = datetime.utcnow() + config.JWT_ACCESS_TOKEN_EXPIRES
+        expire = datetime.utcnow() + cfg.JWT_ACCESS_TOKEN_EXPIRES
         # Gerar token codificado
         encoded_jwt = jwt.encode(
             claims={'sub': username, 'exp': expire, 'context': user_context},
-            key=config.SECRET_KEY,
-            algorithm=config.ALGORITHM
+            key=cfg.SECRET_KEY,
+            algorithm=cfg.ALGORITHM
         )
         # retorno do jwt
         return {'access_token': encoded_jwt,
@@ -73,7 +73,7 @@ class AuthService(DatabaseSessions, PasswordService):
     def get_auth_user_context(token: Annotated[str, Depends(oauth2_scheme)]):
         # Retorna o contexto do usuário
         try:
-            payload = jwt.decode(token, config.SECRET_KEY, algorithms=[config.ALGORITHM])
+            payload = jwt.decode(token, cfg.SECRET_KEY, algorithms=[cfg.ALGORITHM])
             return payload.get('context')
         except JWTError as exc:
             raise HTTPException(

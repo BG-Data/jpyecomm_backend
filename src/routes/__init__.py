@@ -2,6 +2,8 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from api import UserApi, ProductApi, SaleApi, AddressApi, PaymentApi, ProductFileApi
 from structure.schemas import Health
+from common.aws import AwsClient 
+from settings import cfg
 from common.auth import AuthApi, AuthService
 from common.base_users import BaseUsers
 from structure.connectors import Base, engine
