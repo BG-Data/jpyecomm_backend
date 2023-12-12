@@ -1,10 +1,10 @@
 import mercadopago
-from settings import config
+from settings import cfg
 from utils.typos import Aliases
 
 
 class MercadoCheckout:
-    sdk = mercadopago.SDK(config.MERCADO_PAGO_ACCESS_TOKEN)
+    sdk = mercadopago.SDK(cfg.MERCADO_PAGO_ACCESS_TOKEN)
 
     def receive_checkout_payload(self, payload: dict) -> Aliases.CHECKOUT_RESPONSE:
         

@@ -27,8 +27,15 @@ class Config:
     UVICORN_WORKERS = config("UVICORN_WORKERS", default=1, cast=int)
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=config('JWT_ACCESS_TOKEN_EXPIRES', default=1, cast=int))
     RELOAD = config('RELOAD', default=True, cast=bool)
-    
-config = Config()
+    AWS_ACCESS_KEY = config('AWS_ACCESS_KEY', cast=str)
+    AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY', cast=str)
+    AWS_REGION = config('AWS_REGION', cast=str)
+    AWS_BUCKET_NAME = config('AWS_BUCKET_NAME', cast=str)
+    AWS_BUCKET_FOLDER = config('AWS_BUCKET_FOLDER', cast=str)
+
+
+cfg = Config()
+
 
     # def __init__(self):
     #     if self.INFISICAL_TOKEN and self.ENVIRONMENT != 'test':
