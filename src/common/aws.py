@@ -60,7 +60,7 @@ class AwsClient:
             logger.error(e)
             return {'status': False,
                     'file': file_name,
-                    'url': object_name}
+                    'url': f'https://{bucket}.s3.{self.region}.amazonaws.com/{object_name}'}
         finally:
             remove(file_name)
         return {'status': True,
@@ -73,7 +73,8 @@ class AwsClient:
             response = self.client.delete_object(Bucket=bucket,
                                                  Key=object_name)
             logger.info(response)
-            return {'status': response.get('DeleteMarker')}
+            return {'status': response.get('DeleteMarker'),
+                    'url': object_name}
         except ClientError as e:
             logger.error(e)
             return {'status': False,

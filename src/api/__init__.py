@@ -17,6 +17,7 @@ from fastapi.responses import Response
 from structure import MakeOptionalPydantic
 from common.auth import AuthService
 from uuid import uuid4
+from json import dumps 
 
 
 logger.add(sys.stderr, colorize=True,
@@ -119,20 +120,20 @@ class ProductFileApi(CrudApi):
 
         self.service = ProductFileService(model, schema)
 
-    def get(self, id: int = None,
-            limit: int = 5,
-            offset: int = 0,
-            get_schema: Request = None,
-            session: Session = Depends(get_session)):
-        try:
-            results = super().get(id, limit, offset, get_schema, session)
-            if results == []:
-                return Response(content="No file found",
-                                status_code=200)
-            return [result.model_dump() for result in results]
-        except Exception as exp:
-            logger.error(f'error at get {self.__class__.__name__} {exp}')
-            raise HTTPException(status_code=500, detail=f'Error at get_file {exp}')
+    # def get(self, id: int = None,
+    #         limit: int = 5,
+    #         offset: int = 0,
+    #         get_schema: Request = None,
+    #         session: Session = Depends(get_session)):
+    #     try:
+    #         results = super().get(id, limit, offset, get_schema, session)
+    #         if results == []:
+    #             return Response(content="No file found",
+    #                             status_code=200)
+    #         return [result.model_dump() for result in results]
+    #     except Exception as exp:
+    #         logger.error(f'error at get {self.__class__.__name__} {exp}')
+    #         raise HTTPException(status_code=500, detail=f'Error at get_file {exp}')
 
     async def insert(self,
                      files: List[UploadFile],
@@ -152,31 +153,22 @@ class ProductFileApi(CrudApi):
         except Exception as exp:
             logger.error(f'error at insert {self.__class__.__name__} {exp}')
             raise HTTPException(status_code=500, detail=f'Error at insert file {exp}')
-        
 
     async def delete(self,
                      id: int,
                      session: Session = Depends(get_session)):
-        # TODO -> criar rota de deleção da URL e do arquivo no bucket!
-        pass
-        # try:
-        #     files = self.get(id, limit=10, session=session)
-        #     for insertion in files:
-        #         result = await self.service.delete_product_image_url(insertion, filename, product_id)
-        #     return inserted_files
-        # except Exception as exp:
-        #     logger.error(f'error at insert {self.__class__.__name__} {exp}')
-        #     raise HTTPException(status_code=500, detail=f'Error at insert file {exp}')
-
-    # def update(self,
-    #            id: int,
-    #            update_schema: MakeOptionalPydantic.make_partial_model(ProductFileUpdate),
-    #            session: Session = Depends(get_session)):
-    #     try:
-    #         return self.crud.update_item(id, update_schema, session)
-    #     except Exception as exp:
-    #         logger.error(f'error at update {self.__class__.__name__} {exp}')
-    #         raise HTTPException(status_code=500, detail=f'Error at update file {exp}')
+        try:
+            url_deleted = self.service.delete_product_url(id, session)
+            file_deleted = super().delete(id, session=session)
+            if file_deleted == []:
+                return Response(content="No product file found to delete ",
+                                status_code=200)
+            return Response(content=dumps({"bucket_deleted": url_deleted,
+                                     "db_deleted": file_deleted}),
+                            status_code=200)
+        except Exception as exp:
+            logger.error(f'error at delete {self.__class__.__name__} {exp}')
+            raise HTTPException(status_code=500, detail=f'Error at deleted file {exp}')
 
 
 class ProductApi(CrudApi):
@@ -256,14 +248,14 @@ class ProductApi(CrudApi):
 
     def delete(self, id: int = None,
                session: Session = Depends(get_session)):
-        # TODO -> Adicionar delete dos produtos no BUCKET
         try:
             url_deleted = self.service.delete_product_urls(id, session)
-            results = super().delete(id, session)
-            if results == []:
+            product_deleted = super().delete(id, session)
+            if product_deleted == []:
                 return Response(content="No product found to delete ",
                                 status_code=200)
-            return Response(content=[url_deleted, results],
+            return Response(content=dumps({"bucket_deleted": url_deleted,
+                                           "db_deleted": product_deleted}),
                             status_code=200)
 
         except Exception as exp:
