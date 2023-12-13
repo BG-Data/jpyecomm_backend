@@ -32,6 +32,10 @@ class ProductService(DatabaseSessions):
                  schema: BaseModel):
         self.model = model
         self.base_schema = schema
+        self.aws_service: AwsClient = AwsClient('s3',
+                                                cfg.AWS_ACCESS_KEY,
+                                                cfg.AWS_SECRET_ACCESS_KEY,
+                                                cfg.AWS_REGION)
 
     def get_product_urls(self, product_id: int,
                          session: Session = Depends(get_session)) -> List[ProductFileUrls]:
@@ -46,8 +50,9 @@ class ProductService(DatabaseSessions):
     def delete_product_urls(self, product_id: int = None,
                             session: Session = Depends(get_session)):
         try:
-            delete_statement = delete(ProductFilesModel)\
-                                .where(ProductFilesModel.product_id == product_id)
+            file_data = session.query(ProductFilesModel).filter(ProductFilesModel.product_id == product_id).all()
+            deleted_files_bucket = [self.aws_service.delete_file(cfg.AWS_BUCKET_NAME, file.file) for file in file_data]
+            delete_statement = delete(ProductFilesModel).where(ProductFilesModel.product_id == product_id)
             result = session.execute(delete_statement)
             delete_count = result.rowcount
             if delete_count == 0:
@@ -61,8 +66,12 @@ class ProductService(DatabaseSessions):
             return {'status': 'deleted',
                     "table":
                         {"name": ProductFilesModel.__tablename__,
-                         'product_id': product_id}
+                         'product_id': product_id},
+                    "bucket":
+                        {"name": cfg.AWS_BUCKET_NAME,
+                         "urls": deleted_files_bucket}
                     }
+
         except Exception as exp:
             logger.error(f'Error at >>>>> {get_current_method_name()}: {exp}')
             raise HTTPException(status_code=500, detail=str(exp))
@@ -99,6 +108,28 @@ class ProductFileService:
                 raise HTTPException(status_code=400, detail=f'Failed to create image URL: {result}')
         else:
             return result
+
+    def delete_product_url(self, id: int = None,
+                           session: Session = Depends(get_session)):
+        try:
+            file_data = session.query(ProductFilesModel).filter(ProductFilesModel.id == id).first()
+            result = self.aws_service.delete_file(cfg.AWS_BUCKET_NAME, file_data.file)
+            if not result.get('status'):
+                logger.error('No item was found to be deleted')
+                return {'status': 'not deleted',
+                        "bucket":
+                            {"name": cfg.AWS_BUCKET_NAME,
+                             "url": file_data.file}
+                        }
+            logger.info(f'{result} file deleted from bucket')
+            return {'status': 'deleted',
+                    "bucket":
+                        {"name": cfg.AWS_BUCKET_NAME,
+                            "url": file_data.file}
+                    }
+        except Exception as exp:
+            logger.error(f'Error at >>>>> {get_current_method_name()}: {exp}')
+            raise HTTPException(status_code=500, detail=str(exp))
 
 
 class PaymentService:
