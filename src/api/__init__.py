@@ -73,11 +73,17 @@ class UserApi(CrudApi):
             logger.error(f'error at insert {self.__class__.__name__} {exp}')
 
     def insert_privileged(self, insert_schema: UserInsertAdmin,
-                          session: Session = Depends(get_session)):
+                          session: Session = Depends(get_session),
+                          token: str = Depends(AuthService.oauth2_scheme)):
         'This user is restricted for admin creation only'
         try:
-            insert_schema.password = self.password_service.hash_password(insert_schema.password)
-            return self.crud.insert_item(insert_schema, session).model_dump(exclude={'password'})
+            if AuthService.get_auth_user_context(token).get('type') == 'admin':
+                insert_schema.password = self.password_service.hash_password(insert_schema.password)
+                return super().insert(insert_schema, session).model_dump(exclude={'password'})
+            else:
+                raise HTTPException(status_code=401, detail={
+                    'status_code': status.HTTP_401_UNAUTHORIZED,
+                    'info': 'The given user type is not allowed'})
         except Exception as exp:
             logger.error(f'error at insert privileged {self.__class__.__name__} {exp}')
 
@@ -87,7 +93,7 @@ class UserApi(CrudApi):
         'Ordinary user -> buyer'
         try:
             insert_schema.password = self.password_service.hash_password(insert_schema.password)
-            return self.crud.insert_item(insert_schema, session).model_dump(exclude={'password'})
+            return super().insert(insert_schema, session).model_dump(exclude={'password'})
         except Exception as exp:
             logger.error(f'error at insert {self.__class__.__name__} {exp}')
 
