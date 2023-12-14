@@ -1,6 +1,10 @@
 from sqlalchemy.orm import Session
 import cryptocode
-from settings import config
+from settings import cfg
+import inspect
+import os
+import sys
+import threading
 
 
 class DatabaseSessions:
@@ -35,7 +39,7 @@ class DatabaseSessions:
         
 
 class PasswordService:
-    criptocode = config.CRIPTOCODE
+    criptocode = cfg.CRIPTOCODE
 
     # def set_password(self):
     #     pass
@@ -72,3 +76,47 @@ class PasswordService:
                 TypeError: If any of the args is not string or the return is not string.
         '''
         return cryptocode.encrypt(plain_password, cls.criptocode)
+
+
+def get_current_method_name() -> str:
+    # Get the current frame
+    frame = inspect.currentframe()
+
+    # Go up one level in the stack to get the caller's frame
+    caller_frame = inspect.getouterframes(frame, 2)[1]
+
+    # Extract the name of the calling function
+    caller_method_name = caller_frame.function
+
+    # Print the name of the calling function
+    return caller_method_name
+
+
+def generate_variables_dict(func, kwargs: dict) -> dict:
+    variables = {}
+    for key, value in inspect.signature(func).parameters.items():
+        locals()[key] = kwargs.get(key)
+        if locals()[key] is not None:
+            locals()[key] = value.annotation(locals()[key])
+        variables.update({key: locals()[key]})
+    return variables
+
+
+class ProgressPercentage(object):
+
+    def __init__(self, filename):
+        self._filename = filename
+        self._size = float(os.path.getsize(filename))
+        self._seen_so_far = 0
+        self._lock = threading.Lock()
+
+    def __call__(self, bytes_amount):
+        # To simplify, assume this is hooked up to a single filename
+        with self._lock:
+            self._seen_so_far += bytes_amount
+            percentage = (self._seen_so_far / self._size) * 100
+            sys.stdout.write(
+                "\r%s  %s / %s  (%.2f%%)" % (
+                    self._filename, self._seen_so_far, self._size,
+                    percentage))
+            sys.stdout.flush()
