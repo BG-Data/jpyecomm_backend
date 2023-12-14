@@ -23,6 +23,7 @@ boto3 = "^1.28.78"
 pymysql = "^1.1.0"
 mercadopago = "^2.2.1"
 ecdsa = "^0.18.0"
+pydantic = "^2.5.2"
 
 
 [build-system]

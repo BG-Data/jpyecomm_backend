@@ -1,5 +1,5 @@
 from structure.models import UserModel
-from structure.schemas import UserInsert
+from structure.schemas import UserInsertAdmin
 from common.generic import CrudService
 from common import PasswordService
 from datetime import date
@@ -18,21 +18,21 @@ logger.add(sys.stderr, colorize=True,
 class BaseUsers(PasswordService, CrudService):
     def __init__(self,
                  model: UserModel = UserModel,
-                 insert_schema: UserInsert = UserInsert):
+                 insert_schema: UserInsertAdmin = UserInsertAdmin):
         super().__init__(model, insert_schema)
 
     def __base_users_list(self) -> list:
         try:
             to_create = []
-            dev = UserInsert(email='dev@ecomm.com',
-                             name='dev',
-                             password=self.hash_password(cfg.DEV_PSWD),
-                             birthdate=date.today(),
-                             lgpd=True,
-                             document='',
-                             document_type='',
-                             user_type='admin'
-                             )
+            dev = UserInsertAdmin(email='dev@ecomm.com',
+                                  name='dev',
+                                  password=self.hash_password(cfg.DEV_PSWD),
+                                  birthdate=date.today(),
+                                  lgpd=True,
+                                  document='',
+                                  document_type='',
+                                  user_type='admin'
+                                  )
 
             to_create.append(dev)
             return to_create

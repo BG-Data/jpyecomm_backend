@@ -1,10 +1,10 @@
 from pydantic import BaseModel, ConfigDict
 from datetime import date, datetime
-from typing import Optional, List
+from typing import Optional, List, Union
 from decimal import Decimal
 from settings import cfg
 # Usuários
-from utils.enums import UserType
+from utils.enums import UserType, UserTypePrivileged
 
 
 class PydanticModel(BaseModel):
@@ -39,7 +39,7 @@ class UserSchema(UserBase):
     lgpd: bool
     document: str
     document_type: str
-    user_type: UserType
+    user_type: UserType | UserTypePrivileged
     deleted: bool
 
 
@@ -51,6 +51,17 @@ class UserInsert(UserBase):
     document: str
     document_type: str
     user_type: UserType
+    deleted: bool = False
+
+
+class UserInsertAdmin(UserBase):
+    name: str
+    password: str
+    birthdate: date
+    lgpd: bool
+    document: str
+    document_type: str
+    user_type: UserTypePrivileged
     deleted: bool = False
 
 
