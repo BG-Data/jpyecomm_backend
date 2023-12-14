@@ -1,9 +1,8 @@
 from pydantic import BaseModel, ConfigDict
 from datetime import date, datetime
-from typing import Optional, Union, List
+from typing import Optional, List
 from decimal import Decimal
-from fastapi import UploadFile
-from settings import config
+from settings import cfg
 # Usuários
 from utils.enums import UserType
 
@@ -23,7 +22,7 @@ class PydanticModel(BaseModel):
 class Health(PydanticModel):
     datetime: str = datetime.utcnow().strftime("%d-%m-%Y %H:%M:%S")
     status: str = 'ok'
-    environment: str = config.ENVIRONMENT
+    environment: str = cfg.ENVIRONMENT
 
 
 class UserBase(PydanticModel):
@@ -78,6 +77,7 @@ class ProductSchema(ProductBase):
     details: str
     personalized_name: str
     personalized_type: str
+    urls: Optional[List[str]] = []
 
 
 class ProductInsert(ProductBase):
@@ -89,14 +89,19 @@ class ProductInsert(ProductBase):
     personalized_type: str
 
 
-class ProductUpdate(ProductInsert):
-    pass
+class ProductUpdate(ProductBase):
+    infos: str
+    user_id: int
+    category: bool
+    details: str
+    personalized_name: str
+    personalized_type: str
 
 
 class ProductFileBase(PydanticModel):
     filename: str
     content_type: str
-    file: bytes
+    file: str
 
 
 class ProductFileSchema(ProductFileBase):
@@ -106,7 +111,11 @@ class ProductFileSchema(ProductFileBase):
 
 class ProductFileInsert(ProductFileBase):
     product_id: int
-    file: Optional[bytes]
+    file: Optional[str]  # url
+
+
+class ProductFileUrls(PydanticModel):
+    file: Optional[str]
 
 
 class ProductFileUpdate(ProductFileInsert):

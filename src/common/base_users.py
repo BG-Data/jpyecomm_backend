@@ -7,7 +7,7 @@ from loguru import logger
 import sys
 from structure.connectors import Session, SessionLocal
 from typing import List
-from settings import config
+from settings import cfg
 
 
 logger.add(sys.stderr, colorize=True,
@@ -26,7 +26,7 @@ class BaseUsers(PasswordService, CrudService):
             to_create = []
             dev = UserInsert(email='dev@ecomm.com',
                              name='dev',
-                             password=self.hash_password(config.DEV_PSWD),
+                             password=self.hash_password(cfg.DEV_PSWD),
                              birthdate=date.today(),
                              lgpd=True,
                              document='',
