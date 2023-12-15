@@ -131,7 +131,8 @@ class ProductFileApi(CrudApi):
                            self.get,
                            methods=['GET'],
                            response_model=Union[List[schema],
-                                                schema, Any])
+                                                schema, Any],
+                           dependencies=[Depends(AuthService.get_auth_user_context)])
         self.add_api_route('/',
                            self.insert,
                            methods=['POST'],
