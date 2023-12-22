@@ -1,9 +1,13 @@
 from enum import Enum
 
+
 class UserType(str, Enum):
+    comprador = 'comprador'
+
+
+class UserTypePrivileged(str, Enum):
     admin = 'admin'
     vendedor = 'vendedor'
-    comprador = 'comprador'
 
 
 class CheckoutStatus(str, Enum):
