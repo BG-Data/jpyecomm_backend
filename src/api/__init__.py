@@ -64,13 +64,14 @@ class UserApi(CrudApi):
         self.service = UserService(model, schema)
         self.password_service = PasswordService()
 
-    def get(self, user_id: int = None, limit: int = 10, offset: int = 0,
+    def get(self, id: int = None, limit: int = 10, offset: int = 0,
             get_schema: Request = None, session: Session = Depends(get_session)):
         try:
-            user_data = super().get(user_id, limit, offset, get_schema, session)
+            user_data = super().get(id, limit, offset, get_schema, session)
             return [user.model_dump(exclude={'password'}) for user in user_data]
         except Exception as exp:
-            logger.error(f'error at insert {self.__class__.__name__} {exp}')
+            logger.error(f'error at get {self.__class__.__name__} {exp}')
+            raise HTTPException(status_code=400, detail=str(exp))
 
     def insert_privileged(self, insert_schema: UserInsertAdmin,
                           session: Session = Depends(get_session),

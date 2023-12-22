@@ -3,11 +3,11 @@ from loguru import logger
 from typing import List
 import sys
 from common import DatabaseSessions, get_current_method_name
-from fastapi import HTTPException, Depends, UploadFile
+from fastapi import HTTPException, Depends, UploadFile, status
 from structure.connectors import Base
 from sqlalchemy import or_, delete
 from time import sleep
-from structure.models import ProductFilesModel
+from structure.models import ProductFilesModel, UserModel
 from structure.schemas import ProductFileUrls
 from structure.connectors import Session, get_session
 from settings import cfg

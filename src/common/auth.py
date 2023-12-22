@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Annotated, Union
 from structure.models import UserModel
 from structure.connectors import get_session, Session
@@ -57,7 +57,7 @@ class AuthService(DatabaseSessions, PasswordService):
         user_query = self.__db_check_user(username, password, session)
         # Adiciona contexto para os dados do usuário (dados que podem ser úteis para front)
         user_context = self.__user_context(user_query)
-        expire = datetime.utcnow() + cfg.JWT_ACCESS_TOKEN_EXPIRES
+        expire = datetime.utcnow() + timedelta(hours=int(cfg.JWT_ACCESS_TOKEN_EXPIRES))
         # Gerar token codificado
         encoded_jwt = jwt.encode(
             claims={'sub': username, 'exp': expire, 'context': user_context},
