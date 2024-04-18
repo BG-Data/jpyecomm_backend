@@ -1,0 +1,14 @@
+.
+├── images
+└── src # app source folder
+    ├── api # setted apis
+    ├── app # application services and else
+    │   └── checkout
+    ├── common # common solutions used through out the app
+    ├── migrations # Run migrations for db
+    │   └── versions
+    ├── routes # route initing for app
+    ├── structure # db schema, models, connector and else
+    └── utils # utilitarians for the app (used when needed and not frequently as the common)
+
+11 directories

@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "ecommerce-backend"
+version = "0.1.0"
+description = ""
+authors = ["Leon Balloni <leon.balloni@makes.ai>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.8"
+fastapi = "^0.103.2"
+sqlalchemy = "^2.0.21"
+uvicorn = "^0.23.2"
+loguru = "^0.7.2"
+python-dotenv = "^1.0.0"
+python-decouple = "^3.8"
+cryptocode = "^0.1"
+alembic = "^1.12.1"
+psycopg2-binary = "^2.9.9"
+pylint = "^3.0.2"
+python-multipart = "^0.0.6"
+python-jose = "^3.3.0"
+boto3 = "^1.28.78"
+pymysql = "^1.1.0"
+mercadopago = "^2.2.1"
+ecdsa = "^0.18.0"
+pydantic = "^2.5.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
