@@ -1,5 +1,5 @@
 import uvicorn
-from routes import init_app
+from base import init_app
 # from settings import cfg
 
 
