@@ -3,6 +3,7 @@ from datetime import date, datetime
 from typing import Optional, List, Union
 from decimal import Decimal
 from settings import cfg
+
 # Usuários
 from utils.enums import UserType, UserTypePrivileged
 
@@ -21,7 +22,7 @@ class PydanticModel(BaseModel):
 
 class Health(PydanticModel):
     datetime: str = datetime.utcnow().strftime("%d-%m-%Y %H:%M:%S")
-    status: str = 'ok'
+    status: str = "ok"
     environment: str = cfg.ENVIRONMENT
 
 
@@ -131,6 +132,7 @@ class ProductFileUrls(PydanticModel):
 
 class ProductFileUpdate(ProductFileInsert):
     pass
+
 
 # Address
 
@@ -244,6 +246,3 @@ class SaleInsert(SaleBase):
 
 class SaleUpdate(SaleInsert):
     pass
-
-
-

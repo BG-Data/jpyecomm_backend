@@ -4,22 +4,22 @@ from typing import List
 
 # TODO -> Finish Pydantic models for checkout procedures
 
+
 class CheckoutPayerPhone(PydanticModel):
-        area_code: str
-        number: 
+    area_code: str
+    number: str
+
 
 class CheckoutPayer(PydanticModel):
-        name: str
-        surname: str
-        email: str
-        phone: CheckoutPayerPhone
+    name: str
+    surname: str
+    email: str
+    phone: CheckoutPayerPhone
+
 
 class CheckoutPayload(PydanticModel):
-    
 
     items = List[CheckoutItems]
     payer: CheckoutPayer
     identification: CheckoutId
     address: CheckoutAddr
-
-

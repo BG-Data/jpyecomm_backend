@@ -1,3 +1,70 @@
 {
-  "python.linting.enabled": false
+  // PEP 8 linting with flake8
+  "python.linting.flake8Enabled": true,
+  "python.linting.flake8Args": [
+      "--max-line-length=120",
+      "--ignore=E402" // Add any error codes you want to ignore
+  ],
+
+  // Sort imports on save using isort
+  "[python]": {
+      "editor.formatOnSave": true,
+      "editor.formatOnType": true,
+      "editor.defaultFormatter": "ms-python.black-formatter",
+      "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    },
+      // Additional settings for Black formatter
+      "editor.rulers": [110], // Line length guide
+      "editor.wordWrap": "on", // Wrap lines that exceed the viewport width
+  },
+
+  // Configuration for isort
+  "isort.args": [
+      "--profile",
+      "black",
+      "--line-length=120",
+      "--multi-line=3",
+      "--trailing-comma",
+      "--force-grid-wrap=0",
+      "--use-parentheses",
+      "--ensure-newline-before-comments"
+  ],
+
+  // Enable type checking with mypy
+  "python.linting.mypyEnabled": true,
+  "python.linting.mypyArgs": [
+      "--ignore-missing-imports",
+      "--follow-imports=silent",
+      "--show-column-numbers"
+  ],
+
+  // Auto-generate docstrings in numpy format
+  "autoDocstring.docstringFormat": "numpy",
+
+  // Other useful settings
+  "terminal.integrated.enableMultiLinePasteWarning": false,
+
+  // Pytest configuration for testing
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestArgs": [],
+
+  // Configure the Python extension to use the Black formatter
+  "python.formatting.provider": "black",
+  "python.formatting.blackPath": "black",
+  "python.formatting.blackArgs": [
+      "--line-length=88"
+  ],
+
+  // Enable or disable linting
+  "python.linting.enabled": true,
+
+  // Pylint configuration
+  "python.linting.pylintEnabled": true,
+  "python.linting.pylintArgs": [
+      "--disable=C0111" // Disable missing docstring warning, etc.
+],
+"python.analysis.extraPaths": [
+    "./src/makes_dmp/makes_dmp"
+]
 }

@@ -24,6 +24,7 @@ pymysql = "^1.1.0"
 mercadopago = "^2.2.1"
 ecdsa = "^0.18.0"
 pydantic = "^2.5.2"
+black = "^24.4.0"
 
 
 [build-system]

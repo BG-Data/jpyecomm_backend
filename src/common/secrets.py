@@ -5,17 +5,19 @@ from loguru import logger
 import sys
 
 
-logger.add(sys.stderr, colorize=True,
-           format="<yellow>{time}</yellow> {level} <green>{message}</green>",
-           filter="Infisical Client", level="INFO")
+logger.add(
+    sys.stderr,
+    colorize=True,
+    format="<yellow>{time}</yellow> {level} <green>{message}</green>",
+    filter="Infisical Client",
+    level="INFO",
+)
 
 
 class InfisicalClient:
     base_url = "http://app.infisical.com"
 
-    def __init__(self,
-                 infisical_token: str,
-                 environment: str = 'dev'):
+    def __init__(self, infisical_token: str, environment: str = "dev"):
         self.token = infisical_token
         self.environment = environment
 
@@ -31,24 +33,24 @@ class InfisicalClient:
         return cleartext
 
     def check_scopes(self, service_token_data: dict):
-        if service_token_data.get('scopes'):
-            for env in service_token_data.get('scopes'):
-                if env['environment'] == self.environment:
-                    service_token_data['environment'] = self.environment
-                    logger.info(f'Token environment selected {self.environment}')
+        if service_token_data.get("scopes"):
+            for env in service_token_data.get("scopes"):
+                if env["environment"] == self.environment:
+                    service_token_data["environment"] = self.environment
+                    logger.info(f"Token environment selected {self.environment}")
                     break
                 else:
                     continue
         else:
-            response = f'Invalid token for given environment: {self.environment}'
+            response = f"Invalid token for given environment: {self.environment}"
             logger.error(response)
             raise ValueError(response)
         return service_token_data
 
     def get_secrets(self) -> dict:
-        'Return the dict with the secrets'
+        "Return the dict with the secrets"
         service_token = self.token
-        service_token_secret = service_token[service_token.rindex(".") + 1:]
+        service_token_secret = service_token[service_token.rindex(".") + 1 :]
 
         # 1. Get your Infisical Token data
         service_token_data = requests.get(

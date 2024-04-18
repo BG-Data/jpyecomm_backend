@@ -27,7 +27,7 @@ class DatabaseSessions:
         except Exception as e:
             db.rollback()
             raise e
-    
+
     def delete_session(self, db: Session, db_action):
         try:
             db.delete(db_action)
@@ -36,7 +36,7 @@ class DatabaseSessions:
         except Exception as e:
             db.rollback()
             raise e
-        
+
 
 class PasswordService:
     criptocode = cfg.CRIPTOCODE
@@ -46,7 +46,7 @@ class PasswordService:
 
     @classmethod
     def get_password(cls, plain_password: str, hashed_password: str) -> bool:
-        '''
+        """
         Checks if the password is compatible with the password hash.
 
             Args:
@@ -54,16 +54,16 @@ class PasswordService:
                 hashed_password (string): hashed password fetched by the DB engine.
 
             Returns:
-                boolean type -> True for correct or False for incorrect plain_password inserted          
+                boolean type -> True for correct or False for incorrect plain_password inserted
 
             Raises:
                 TypeError: If any of the args is not str or the return is not boolean.
-        '''
+        """
         return cryptocode.decrypt(hashed_password, cls.criptocode) == plain_password
 
     @classmethod
     def hash_password(cls, plain_password: str) -> str:
-        '''
+        """
         get the password hash.
 
             Args:
@@ -74,7 +74,7 @@ class PasswordService:
 
             Raises:
                 TypeError: If any of the args is not string or the return is not string.
-        '''
+        """
         return cryptocode.encrypt(plain_password, cls.criptocode)
 
 
@@ -116,7 +116,7 @@ class ProgressPercentage(object):
             self._seen_so_far += bytes_amount
             percentage = (self._seen_so_far / self._size) * 100
             sys.stdout.write(
-                "\r%s  %s / %s  (%.2f%%)" % (
-                    self._filename, self._seen_so_far, self._size,
-                    percentage))
+                "\r%s  %s / %s  (%.2f%%)"
+                % (self._filename, self._seen_so_far, self._size, percentage)
+            )
             sys.stdout.flush()

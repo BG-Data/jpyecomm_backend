@@ -1,6 +1,7 @@
 import psycopg2
 from psycopg2 import OperationalError
 
+
 def create_conn():
     conn = None
     try:
@@ -9,12 +10,12 @@ def create_conn():
             user="user",
             password="test",
             host="url",
-            port="5432", # change this to your port number
+            port="5432",  # change this to your port number
         )
         print("Connection to PostgreSQL DB successful")
     except OperationalError as e:
         print(f"The error '{e}' occurred")
     return conn
 
-connection = create_conn()
 
+connection = create_conn()

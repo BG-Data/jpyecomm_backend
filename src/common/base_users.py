@@ -10,46 +10,56 @@ from typing import List
 from settings import cfg
 
 
-logger.add(sys.stderr, colorize=True,
-           format="<yellow>{time}</yellow> {level} <green>{message}</green>",
-           filter="BaseUser", level="INFO")
+logger.add(
+    sys.stderr,
+    colorize=True,
+    format="<yellow>{time}</yellow> {level} <green>{message}</green>",
+    filter="BaseUser",
+    level="INFO",
+)
 
 
 class BaseUsers(PasswordService, CrudService):
-    def __init__(self,
-                 model: UserModel = UserModel,
-                 insert_schema: UserInsertAdmin = UserInsertAdmin):
+    def __init__(
+        self,
+        model: UserModel = UserModel,
+        insert_schema: UserInsertAdmin = UserInsertAdmin,
+    ):
         super().__init__(model, insert_schema)
 
     def __base_users_list(self) -> list:
         try:
             to_create = []
-            dev = UserInsertAdmin(email='dev@ecomm.com',
-                                  name='dev',
-                                  password=self.hash_password(cfg.DEV_PSWD),
-                                  birthdate=date.today(),
-                                  lgpd=True,
-                                  document='',
-                                  document_type='',
-                                  user_type='admin'
-                                  )
+            dev = UserInsertAdmin(
+                email="dev@ecomm.com",
+                name="dev",
+                password=self.hash_password(cfg.DEV_PSWD),
+                birthdate=date.today(),
+                lgpd=True,
+                document="",
+                document_type="",
+                user_type="admin",
+            )
 
             to_create.append(dev)
             return to_create
         except Exception as exp:
-            logger.error(f'Error at base_users_list {exp}')
+            logger.error(f"Error at base_users_list {exp}")
             raise exp
 
     def __check_base_users(self, session: Session) -> List[dict]:
         try:
             to_create = []
             for users in self.__base_users_list():
-                result = session.query(UserModel).filter(UserModel.email == users.email).one_or_none()
-                to_create.append({'insert': False if result else True,
-                                  'schema': users})
+                result = (
+                    session.query(UserModel)
+                    .filter(UserModel.email == users.email)
+                    .one_or_none()
+                )
+                to_create.append({"insert": False if result else True, "schema": users})
             return to_create
         except Exception as exp:
-            logger.error(f'Error at check_base_users {exp}')
+            logger.error(f"Error at check_base_users {exp}")
             raise exp
 
     def create_base_users(self) -> dict:
@@ -58,14 +68,13 @@ class BaseUsers(PasswordService, CrudService):
 
                 created = 0
                 for itens in self.__check_base_users(session):
-                    if itens.get('insert') is True:
-                        user_created = self.insert_item(itens.get('schema'),
-                                                        session)
-                        logger.info(f'user created: {user_created}')
+                    if itens.get("insert") is True:
+                        user_created = self.insert_item(itens.get("schema"), session)
+                        logger.info(f"user created: {user_created}")
                         created += 1
-                return {'Users created': created}
+                return {"Users created": created}
         except Exception as exp:
-            logger.error(f'Error at create_base_users {exp}')
+            logger.error(f"Error at create_base_users {exp}")
             raise exp
         finally:
             session.close()

@@ -2,12 +2,12 @@ from enum import Enum
 
 
 class UserType(str, Enum):
-    comprador = 'comprador'
+    comprador = "comprador"
 
 
 class UserTypePrivileged(str, Enum):
-    admin = 'admin'
-    vendedor = 'vendedor'
+    admin = "admin"
+    vendedor = "vendedor"
 
 
 class CheckoutStatus(str, Enum):
@@ -15,6 +15,7 @@ class CheckoutStatus(str, Enum):
     success = "success"
     failure = "failure"
     pending = "pending"
+
 
 # class UserBase(BaseModel):
 #     model_config = ConfigDict(from_attributes=True)
@@ -39,5 +40,3 @@ class CheckoutStatus(str, Enum):
 #     document: str
 #     document_type: str
 #     user_type: str
-
-
