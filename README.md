@@ -1,8 +1,36 @@
-# ecomm_of_love
-Repositório do PI2 para criar um ecommerce website rodando em JS + Python  
+# Python Ecommerce Backend
+Repositório de Projeto Integrador II da UNIVESP criado para sustentar o servidor de backend que servirá como base para um Ecommerce junto React (outro repositório)  
 <!-- 
 Exemplificação das operações Back-Front-Infra
 ![automated like clockwork](./images/Aplicação%20Básica%20-%20E-commerce.drawio.png) -->
+
+## Motivação
+1. Criar uma aplicação de Ecommerce que opera utilizando Python;
+2. Desenvolver habilidades de desenvolvimento Backend utilizando Fastapi, sqlalchemy, integrações com mercado pago e outrem;
+3. Servir como base de prática para estruturações mais agnósticas (polimorficas) e aplicação de conceito de design orientado por domínio 
+4. Aprender a desenvolver código aberto e boas práticas com a comunidade [Guia](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/managing-repository-settings/setting-repository-visibility)
+
+
+# TODOs
+
+## Backend
+1. Criar tabela para registro de requisiçõe s(logger)
+2. Adicionar sistema de [Checkout PRO](https://www.mercadopago.com.br/developers/pt/docs/checkout-pro/landing) + [GIT](https://github.com/mercadopago/sdk-python)
+3. Criar auth via google api
+4. Criar serviço para usuários adicionarem fotos pessoais 
+5. Criar sistema de permissões básico (Admin, Vendedor, Comprador)
+6. Adicionar estrutura para recuperação de senha via envio de e-mail com token 
+7. Adicionar MFA em login 
+8. Criar tutorial a-z do backend
+9. Configurar CORS adequadamente 
+
+## Devops
+1. Garantir que arquivos no bucket estejam protegidos
+2. Desenvolver Deploy de Ambiente em Kubernets
+3. 
+
+## Frontend
+1. Not here my friend haha
 
 
 # Estrutura da APP
@@ -10,7 +38,7 @@ Exemplificação das operações Back-Front-Infra
 | Ambiente  | Fonte  | Precisa  |   |   |
 |---|---|---|---|---|
 | Teste  | Sqlite | - |   |   |
-| Develop | develop-ecomm-db.cvzwreo61y01.us-east-1.rds.amazonaws.com:3306/ecomm | .env ou infisical |   |   |
+| Develop | - | .env ou infisical |   |   |
 |  Prod | - | - | - | - |
 
 <!-- Make the tree with tre -d -I __pycache__ >> tree.txt -->
@@ -35,7 +63,7 @@ tree -d -I __pycache__ >> tree.txt
     ├── common # Pacotes comuns desenvolvidos e amplamente utilizados pela aplicação
     ├── migrations # Opera atividades de alteração do banco de dados
     │   └── versions
-    ├── routes # Rotas ou CRUD ativas
+    ├── base # Inicializador das dependências da Main.
     ├── structure # Abstração do banco de dados, esquemas, conectores, etc
     └── utils # Utilitários da aplicação (Usados mas não tão frequentemente)
 ```
@@ -112,11 +140,3 @@ alembic downgrade base
 ```shell
 alembic downgrade [REVISION_ID] 
 ```
-
-
-# TODO
-
-1. Configurar infisical para gerenciar secrets
-2. Adicionar sistema de [Checkout PRO](https://www.mercadopago.com.br/developers/pt/docs/checkout-pro/landing) + [GIT](https://github.com/mercadopago/sdk-python)
-3. Configurar user_context para Front
-4. Desenvolver Tela de usuários + login
